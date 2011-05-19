@@ -3,6 +3,8 @@ package
 	import Lesson5Final.src.HeroControllerComponent;
 	
 	import com.middlebury.game.Assets;
+	import com.middlebury.game.controller.ScoreController;
+	import com.middlebury.game.data.Score;
 	import com.middlebury.game.display.Display;
 	import com.middlebury.game.display.RenderObject;
 	import com.pblabs.engine.PBE;
@@ -46,6 +48,9 @@ package
 			
 			// Create a simple background entity
 			createBackground();
+			
+			// initialize score
+			createScore();
 		}
 		
 		private function createScene():void 
@@ -150,8 +155,13 @@ package
 			
 			ent.addComponent(spatial, "Spatial");
 		}
-
-
+		private var scoreController:ScoreController;
+		
+		// Initialize the score controller
+		private function createScore():void
+		{
+			this.scoreController = new ScoreController(this,new Score);
+		}
 
 	}
 }
