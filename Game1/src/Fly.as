@@ -3,6 +3,8 @@ package
 	import Lesson5Final.src.HeroControllerComponent;
 	
 	import com.middlebury.game.Assets;
+	import com.middlebury.game.display.Display;
+	import com.middlebury.game.display.RenderObject;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
@@ -113,27 +115,20 @@ package
 				// with location of 0,0...
 				new Point(0, 0)
 			);
-			
-			// Create a simple render component to display our object
-			
-			// Just like the hero, this also uses a SpriteRenderComponent
-			var render:SpriteRenderer = new SpriteRenderer();
-			
-			// Tell the Render component to use one of the images embedded by our ResourceLinker
-			render.fileName = "assets/bg_sunset2.jpg";
-			
-			// Set our background to render below the hero.
-			render.layerIndex = 1;
-			
-			// Add the renderer to the scene.
-			render.scene = PBE.scene;
-			
-			// Point the render component to this entity's Spatial component for position information
-			render.positionProperty = new PropertyReference("@Spatial.position");
-			
+			var render:RenderObject 
+			= new RenderObject(
+				"Render",  					// Component name
+				"assets/bg_sunset2.jpg", 	// Component asset
+				1,  						// Component layer
+				PBE.scene,					// Component scene
+				"@Spatial.position"			// Component position
+			);
+			var terrain:Display 
+				= new Display(render);
+				
 			// Add our render component to the BG entity with the name "Render"
-			bg.addComponent( render, "Render" );
-			
+			bg.addComponent( terrain, terrain.renderObject.name );
+	
 			// Register the entity with PBE under the name "BG"
 			bg.initialize("BG");         
 		}

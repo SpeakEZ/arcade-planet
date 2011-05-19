@@ -18,7 +18,7 @@
 		<link>
 			<name>[source path] src</name>
 			<type>2</type>
-			<location>/git/pbe/src</location>
+			<location>/Projects/middil/gamedev/pbe/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>
