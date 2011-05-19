@@ -30,29 +30,27 @@ package Lesson5Final.src
             
             // Look at our input keys to see which direction we should move. Left is -x, right is +x.
             if (PBE.isKeyDown(InputKey.RIGHT))
-            {
-                // Move our hero to the right
-                position.x += 15;
-            }
-            
-            if (PBE.isKeyDown(InputKey.LEFT))
-            {
-                // Move our hero to the left
-                position.x -= 15;
-            }
+                position.x += 5;
+			else if (PBE.isKeyDown(InputKey.LEFT))
+                position.x -= 5;
+			
+            if (PBE.isKeyDown(InputKey.UP))
+                position.y -= 5;
+			else if (PBE.isKeyDown(InputKey.DOWN))
+                position.y += 5;
             
             // Finally, add some boundary limits so that we don't go off the edge of the screen.
             if (position.x > 375)
-            {
-                // Set our position at the wall edge
                 position.x = 375;               
-            } 
             else if (position.x < -375)
-            {
-                // Set our position at the wall edge
                 position.x = -375;
-            }
+			
+            if (position.y > 225)
+                position.y = 225;               
+            else if (position.y < -225)
+                position.y = -225;
             
+			
             // Send our manipulated spatial variables back to the spatial manager
             owner.setProperty(positionReference, position);
         }    
