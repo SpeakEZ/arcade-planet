@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/1111/trunk/src/com/pblabs/engine/resource/provider
+END
+ResourceProviderBase.as
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/1111/trunk/src/com/pblabs/engine/resource/provider/ResourceProviderBase.as
+END
+FallbackResourceProvider.as
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/1107/trunk/src/com/pblabs/engine/resource/provider/FallbackResourceProvider.as
+END
+BulkLoaderResourceProvider.as
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/1107/trunk/src/com/pblabs/engine/resource/provider/BulkLoaderResourceProvider.as
+END
+IResourceProvider.as
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/1107/trunk/src/com/pblabs/engine/resource/provider/IResourceProvider.as
+END
+EmbeddedResourceProvider.as
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/1107/trunk/src/com/pblabs/engine/resource/provider/EmbeddedResourceProvider.as
+END

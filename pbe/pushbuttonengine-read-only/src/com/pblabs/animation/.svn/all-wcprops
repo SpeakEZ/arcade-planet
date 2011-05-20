@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/1122/trunk/src/com/pblabs/animation
+END
+AnimatorComponent.as
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/460/trunk/src/com/pblabs/animation/AnimatorComponent.as
+END
+AnimationEvent.as
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/283/trunk/src/com/pblabs/animation/AnimationEvent.as
+END
+Tween.as
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/1120/trunk/src/com/pblabs/animation/Tween.as
+END
+PointAnimator.as
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/1121/trunk/src/com/pblabs/animation/PointAnimator.as
+END
+TweenComponent.as
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/1118/trunk/src/com/pblabs/animation/TweenComponent.as
+END
+FrameAnimator.as
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/1000/trunk/src/com/pblabs/animation/FrameAnimator.as
+END
+TweenController.as
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/1122/trunk/src/com/pblabs/animation/TweenController.as
+END
+Animator.as
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/1121/trunk/src/com/pblabs/animation/Animator.as
+END
+AnimatorType.as
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/431/trunk/src/com/pblabs/animation/AnimatorType.as
+END
