@@ -13,6 +13,9 @@ package com.middlebury.game
 		[Embed(source="assets/bg_space.png")]
 		public var space:Class;
 		
+		[Embed(source="assets/dot.png")]
+		public var dot:Class;
+		
 		public function Assets()
 		{
 		}

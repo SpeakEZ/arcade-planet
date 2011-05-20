@@ -10,6 +10,7 @@ package
 	import Lesson5Final.src.HeroControllerComponent;
 	
 	import com.middlebury.game.Assets;
+	import com.middlebury.game.controller.EntityFactory;
 	import com.middlebury.game.controller.ScoreController;
 	import com.middlebury.game.data.Score;
 	import com.middlebury.game.display.Display;
@@ -59,10 +60,17 @@ package
 			createHero();
 			
 			// Create a simple background entity
-			createBackground();
+			PBE.defineEntityByFunction("BG", EntityFactory.CreateBackground);
+			PBE.makeEntity("BG");
 			
 			// initialize score
 			createScore();
+			
+			// initialize lives
+			PBE.defineEntityByFunction("Lives", EntityFactory.CreateLives);
+			PBE.makeEntity("Lives");
+			PBE.defineEntityByFunction("Lives2", EntityFactory.CreateLives2);
+			PBE.makeEntity("Lives2");
 			
 			ScreenManager.instance.registerScreen("game", new GameScreen(score));
 			ScreenManager.instance.goto("game");
@@ -123,34 +131,6 @@ package
 			
 			// Register the entity with PBE under the name "Hero"
 			hero.initialize("Hero");
-		}
-		
-		private function createBackground():void
-		{
-			// Allocate an entity for our background sprite
-			var bg:IEntity = PBE.allocateEntity();
-			
-			// Add our spatial component to the background entity ...
-			createSpatial( bg, 
-				// with location of 0,0...
-				new Point(0, 0)
-			);
-			var render:RenderObject 
-			= new RenderObject(
-				"Render",  					// Component name
-				"assets/bg_space.png", 	// Component asset
-				1,  						// Component layer
-				PBE.scene,					// Component scene
-				"@Spatial.position"			// Component position
-			);
-			var terrain:Display 
-				= new Display(render);
-				
-			// Add our render component to the BG entity with the name "Render"
-			bg.addComponent( terrain, terrain.renderObject.name );
-	
-			// Register the entity with PBE under the name "BG"
-			bg.initialize("BG");         
 		}
 
 		// This is a shortcut function to help simplify the creation of spatial components

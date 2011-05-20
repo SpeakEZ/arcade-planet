@@ -11,11 +11,11 @@ package com.middlebury.game.display
 		public var scene:IScene2D;
 		public var position:String;
 		
-		public function RenderObject(name:String="",
-									 file:String="",
+		public function RenderObject(file:String="",
 									 layer:int=0,
 									 scene:IScene2D=null,
-									 position:String="")
+									 position:String="@Spatial.position",
+									 name:String="Render")
 		{
 			this.name = name;
 			this.file = file;
