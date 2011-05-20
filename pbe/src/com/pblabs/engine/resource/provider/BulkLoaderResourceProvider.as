@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.engine.resource.provider
 {
     import br.com.stimuli.loading.BulkLoader;
@@ -68,6 +76,13 @@ package com.pblabs.engine.resource.provider
             loader.get(resourceIdentifier).addEventListener(Event.COMPLETE,resourceLoaded)
             loader.get(resourceIdentifier).addEventListener(BulkLoader.ERROR,resourceError)
             
+			//If force reload, delete old resource first:
+            if (resources[resourceIdentifier] && forceReload)
+            {
+                resources[resourceIdentifier] = null;
+                delete resources[resourceIdentifier];
+            }			
+			
             if (resources[resourceIdentifier]==null)
             {
                 // create resource and provide it to the ResourceManager
@@ -80,6 +95,12 @@ package com.pblabs.engine.resource.provider
             
             return resource;
         }
+		
+		public override function unloadResource(uri:String, type:Class):void
+		{
+			// no bulk loaded resources will be automaticly unloaded
+			// because we preloaded the resources and want to keep them available 
+		}
         
         
         /**
@@ -230,6 +251,7 @@ package com.pblabs.engine.resource.provider
                 for (var r:int=0; r<bulkResources.length; r++)
                 {
                     var resourceIdentifier:String = bulkResources[r].url.toLowerCase() + bulkResources[r].type;
+					if (bulkResources[r].id!=null) resourceIdentifier = bulkResources[r].id;					
                     if (bulkResources[r].url != "" && bulkResources[r].url != null &&
                         bulkResources[r].type )
                     {

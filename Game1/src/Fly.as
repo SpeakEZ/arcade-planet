@@ -19,6 +19,7 @@ package
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
+	import com.pblabs.rendering2D.MovieClipRenderer;
 	import com.pblabs.rendering2D.SimpleSpatialComponent;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	import com.pblabs.rendering2D.ui.SceneView;
@@ -92,10 +93,10 @@ package
 			// Create a simple render component to display our object
 			
 			// Here we've removed the reference to our simple shape renderer, and added a sprite render component.
-			var render:SpriteRenderer = new SpriteRenderer();
+			var render:MovieClipRenderer = new MovieClipRenderer();
 			
 			// Tell the Render component to use one of the images embedded by our ResourceBundle
-			render.fileName = "assets/fanship.png";
+			render.fileName = "assets/alien.swf";
 			
 			// Add the renderer to the scene.
 			render.scene = PBE.scene;

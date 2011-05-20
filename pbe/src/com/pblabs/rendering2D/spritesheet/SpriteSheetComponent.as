@@ -10,8 +10,8 @@ package com.pblabs.rendering2D.spritesheet
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.debug.Logger;
-    import com.pblabs.engine.resource.ResourceManager;
     import com.pblabs.engine.resource.ImageResource;
+    import com.pblabs.engine.resource.ResourceManager;
     
     import flash.display.BitmapData;
     import flash.geom.Point;
@@ -37,6 +37,7 @@ package com.pblabs.rendering2D.spritesheet
      */ 
     public class SpriteSheetComponent extends SpriteContainerComponent
     {
+						
         /**
          * True if the image data associated with this sprite sheet has been loaded.
          */
@@ -51,7 +52,7 @@ package com.pblabs.rendering2D.spritesheet
          */
         public function get imageFilename():String
         {
-            return _image == null ? null : _image.filename;
+            return _imageFilename;
         }
         
         /**
@@ -59,14 +60,48 @@ package com.pblabs.rendering2D.spritesheet
          */
         public function set imageFilename(value:String):void
         {
-            if (_image)
-            {
-                PBE.resourceManager.unload(_image.filename, ImageResource);
-                image = null;
-            }
-            
-            PBE.resourceManager.load(value, ImageResource, onImageLoaded, onImageFailed);
+			if (imageFilename!=value)
+			{
+	            if (_image)
+	            {
+	                PBE.resourceManager.unload(_image.filename, ImageResource);
+	                image = null;
+	            }
+				_imageFilename = value;
+	            _loading = true;
+				// Tell the ResourceManager to load the ImageResource
+	            PBE.resourceManager.load(value, ImageResource, onImageLoaded, onImageFailed);
+			}
         }
+		
+		
+		/**
+		 * Indicates if the ImageResource loading is in progress 
+		 */ 
+		[EditorData(ignore="true")]
+		public function get loading():Boolean
+		{
+			return _loading;
+		}
+		
+		/**
+		 * Indicates if the ImageResource has been loaded 
+		 */ 
+		[EditorData(ignore="true")]
+		public function get loaded():Boolean
+		{
+			return _loaded;
+		}
+		
+		/**
+		 * Indicates if the ImageResource has failed loading 
+		 */
+		[EditorData(ignore="true")]
+		public function get failed():Boolean
+		{
+			return _failed;
+		}
+		
         
         /**
          * The image resource to use for this sprite sheet.
@@ -82,6 +117,7 @@ package com.pblabs.rendering2D.spritesheet
         public function set image(value:ImageResource):void
         {
             _image = value;
+			_imageFilename = _image.filename;
             deleteFrames();
         }
         
@@ -100,6 +136,7 @@ package com.pblabs.rendering2D.spritesheet
          * The divider to use to chop up the sprite sheet into frames. If the divider
          * isn't set, the image will be treated as one whole frame.
          */
+        [TypeHint(type="dynamic")]
         public function get divider():ISpriteSheetDivider
         {
             return _divider;
@@ -114,8 +151,8 @@ package com.pblabs.rendering2D.spritesheet
             _divider.owningSheet = this;
             deleteFrames();
         }
-        
-        override protected function getSourceFrames() : Array
+		
+        protected override function getSourceFrames() : Array
         {
             // If user provided their own bitmapdatas, return those.
             if(_forcedBitmaps)
@@ -136,14 +173,15 @@ package com.pblabs.rendering2D.spritesheet
             else
             {
                 frames = new Array(_divider.frameCount);
+								
                 for (var i:int = 0; i < _divider.frameCount; i++)
                 {
-                    var area:Rectangle = _divider.getFrameArea(i);
+                    var area:Rectangle = _divider.getFrameArea(i);										
                     frames[i] = new BitmapData(area.width, area.height, true);
-                    frames[i].copyPixels(imageData, area, new Point(0, 0));
-                }
-            }
-            
+                    frames[i].copyPixels(imageData, area, new Point(0, 0));									
+                }				
+            }		
+			
             return frames;
         }
         
@@ -158,15 +196,46 @@ package com.pblabs.rendering2D.spritesheet
         
         protected function onImageLoaded(resource:ImageResource):void
         {
+			_loading = false;
+			_loaded = true;
+			_failed = false;
             image = resource;
         }
-        
+        		
         protected function onImageFailed(resource:ImageResource):void
         {
+			_loading = false;
+			_failed = true;
             Logger.error(this, "onImageFailed", "Failed to load '" + (resource ? resource.filename : "(unknown)") + "'");
         }
+		
+		protected override function onAdd():void
+		{
+			super.onAdd();
+			if (!_image && imageFilename!=null && imageFilename!="" && !loading)
+			{
+				_loading = true;
+				PBE.resourceManager.load(imageFilename, ImageResource, onImageLoaded, onImageFailed);
+			}
+		}
+		
+		protected override function onRemove():void
+		{
+			if (_image)
+			{
+				PBE.resourceManager.unload(_image.filename, ImageResource);
+				_image = null;
+				_loaded = false;
+			}  
+			super.onRemove();         			
+		}
+		
         
+		private var _imageFilename:String = null;
         private var _image:ImageResource = null;
+		private var _loading:Boolean = false;
+		private var _loaded:Boolean = false;
+		private var _failed:Boolean = false;
         private var _divider:ISpriteSheetDivider = null;
         private var _forcedBitmaps:Array = null;
     }

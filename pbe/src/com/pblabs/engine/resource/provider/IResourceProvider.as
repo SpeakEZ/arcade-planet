@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.engine.resource.provider
 {
     import com.pblabs.engine.resource.Resource;
@@ -20,5 +28,11 @@ package com.pblabs.engine.resource.provider
          * resource from a ResourceProvider
          */
         function getResource(uri:String, type:Class, forceReload:Boolean = false):Resource;
+		
+		/**
+		 * This method is called when the ResourceManager has no references to a specific resource
+		 * and wants to unload the resource.
+		 */
+		function unloadResource(uri:String, type:Class):void;
     }
 }

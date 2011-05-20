@@ -165,69 +165,31 @@ package com.pblabs.engine.resource
          * @param resourceType The type of the resource to unload.
          */
         public function unload(filename:String, resourceType:Class):void
-        {
-            // Right now unload is unloading embedded resources inappropriately. Since
-            // they are going to be in memory anyway as part of the SWF, I am disabling
-            // Unload for now.
-            
-            // mas : we probably have to unload the resource @ the specific resourceProvider
-            // 		 as well! so we have to take this into account when we reactivate the
-            //		 unload.
-            
-            return;
-            
-            if (!_resources[filename + resourceType])
+        {        
+			var resourceIdentifier:String = filename.toLowerCase() + resourceType;			
+            if (!_resources[resourceIdentifier])
             {
                 Logger.warn(this, "Unload", "The resource from file " + filename + " of type " + resourceType + " is not loaded.");
                 return;
-            }
-            
-            _resources[filename + resourceType].DecrementReferenceCount();
-            if (_resources[filename + resourceType].ReferenceCount < 1)
+            }																			
+            _resources[resourceIdentifier].decrementReferenceCount();
+			
+            if (_resources[resourceIdentifier].referenceCount < 1)
             {
-                _resources[filename + resourceType] = null;
-                delete _resources[filename + resourceType];
-            }
-        }
-        
-        /**
-         * Registers data with the resource manager to be treated as a resource. This is
-         * used by embedded resources, which is facilitated by the ResourceBinding class.
-         * 
-         * @param filename The name to register the resource under. In the case of embedded
-         * resources, it should match the filename of the resource.
-         * @param resourceType The Resource subclass to create with the specified data.
-         * @param data A byte array containing the data for the resource. This should match
-         * up with the data expected by the specific Resource subclass.
-         * 
-         * @see com.pblabs.engine.resource.ResourceBundle
-         */
-        public function registerEmbeddedResource(filename:String, resourceType:Class, data:*):void
-        {
-            var resourceIdentifier:String = filename.toLowerCase() + resourceType;
-            
-            if (_resources[resourceIdentifier])
-            {
-                Logger.warn(this, "registerEmbeddedResource", "A resource from file " + filename + " has already been embedded.");
-                return;
-            }
-            
-            try
-            {
-                // Set up the resource, but don't process it yet.
-                var resource:Resource = new resourceType();
-                resource.filename = filename;
-                resource.initialize(data);
-                
-                // These can be in the try since the catch will return.
-                resource.incrementReferenceCount();
-                _resources[resourceIdentifier] = resource;
-            }
-            catch(e:Error)
-            {
-                Logger.error(this, "registerEmbeddedResources", "Could not instantiate resource " + filename + " due to error:\n" + e.toString());
-                return;
-            }
+				_resources[resourceIdentifier] = null;
+				delete _resources[resourceIdentifier];
+				
+				// unload with resourceProvider
+				for (var rp:int = 0; rp < resourceProviders.length; rp++)
+				{
+					if ((resourceProviders[rp] as IResourceProvider).isResourceKnown(filename, resourceType))
+					{
+						(resourceProviders[rp] as IResourceProvider).unloadResource(filename, resourceType);
+						return;
+					}
+				};
+				FallbackResourceProvider.instance.unloadResource(filename, resourceType);				
+            }						
         }
         
         /**
@@ -266,7 +228,19 @@ package com.pblabs.engine.resource
             var r:Resource = _resources[resourceIdentifier];
             return r.isLoaded;                
         }
-        
+
+		/**
+		 * Provides a resource if it is known. could be that it is not loaded yet.  
+		 * @param filename Same as request to load()
+		 * @param type Same as request to load().
+		 * @return resource
+		 */
+		public function getResource(filename:String, resourceType:Class):Resource
+		{
+			var resourceIdentifier:String = filename.toLowerCase() + resourceType;
+			return _resources[resourceIdentifier];
+		}
+		
         /**
          * Properly mark a resource as failed-to-load.
          */

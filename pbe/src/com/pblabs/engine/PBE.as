@@ -13,6 +13,7 @@ package com.pblabs.engine
     import com.pblabs.engine.entity.*;
     import com.pblabs.engine.resource.ResourceBundle;
     import com.pblabs.engine.resource.ResourceManager;
+    import com.pblabs.engine.serialization.TypeUtility;
     import com.pblabs.engine.version.VersionDetails;
     import com.pblabs.engine.version.VersionUtil;
     import com.pblabs.rendering2D.*;
@@ -29,7 +30,9 @@ package com.pblabs.engine
     import flash.display.StageAlign;
     import flash.display.StageScaleMode;
     import flash.geom.*;
+    import flash.net.registerClassAlias;
     import flash.system.Security;
+    import flash.utils.Dictionary;
     import flash.utils.getQualifiedClassName;
     
     /**
@@ -76,10 +79,25 @@ package com.pblabs.engine
         {
             // Do nothing else - the compiler will include the class by virtue of it
             // having been used.
-            
+            registerClassAlias(getQualifiedClassName(type).replace("::", "."),type);
+
+			// Add this class to the TypeUtility
+			TypeUtility.addClass(getQualifiedClassName(type).replace("::", "."),type);
+			
             // Note this type in the schema generator.
             SchemaGenerator.instance.addClass(getQualifiedClassName(type), type);
         }
+		
+		/**
+		 * 
+		 * @return A dictionary of Registered types. With keys as
+		 * class names and values as class definitions
+		 * 
+		 */	  
+		public static function getRegisteredTypes():Dictionary
+		{
+			return SchemaGenerator.instance.getRegisteredTypes();
+		}
         
         /**
          * Allocates an instance of the hidden Entity class. This should be
@@ -137,6 +155,8 @@ package com.pblabs.engine
             _main = mainClass;
             _versionDetails = VersionUtil.checkVersion(mainClass);
             
+			registerClassAlias("com.pblabs.engine.entity",PropertyReference);
+			
             // Set up some managers.
             initializeManagers();
             
@@ -145,7 +165,7 @@ package com.pblabs.engine
             // and scale mode to be different just set these values after you call PBE.startup.
             mainClass.stage.align = StageAlign.TOP_LEFT;
             mainClass.stage.scaleMode = StageScaleMode.NO_SCALE;
-            
+			
             // Welcome message.
             Logger.print(PBE, _versionDetails.toString());
             
@@ -215,7 +235,7 @@ package com.pblabs.engine
          * Helper function to set up a basic scene using default Rendering2D
          * classes. Very useful for getting started quickly.
          */
-        public static function initializeScene(view:IUITarget, sceneName:String = "SceneDB", sceneClass:Class = null, spatialManagerClass:Class = null):IEntity
+        public static function initializeScene(view:IUITarget, sceneName:String = "SceneDB", sceneClass:Class = null, spatialManagerClass:Class = null, sceneAlignment:SceneAlignment = null):IEntity
         {
             // You will notice this is almost straight out of lesson #2.
             var scene:IEntity = allocateEntity();                                // Allocate our Scene entity
@@ -233,6 +253,7 @@ package com.pblabs.engine
             
             _scene = new sceneClass();               // Allocate our renderering component
             _scene.sceneView = view;                 // Point the Renderer's SceneView at the view we just created.
+			_scene.sceneAlignment = sceneAlignment ? sceneAlignment : SceneAlignment.DEFAULT_ALIGNMENT; 			// Set default sceneAlignment
             scene.addComponent( _scene, "Scene" );   // Add our Renderer component to the scene entity with the name "Renderer"
             
             return scene;

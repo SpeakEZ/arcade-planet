@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.engine.entity
 {
     import com.pblabs.engine.PBE;
@@ -67,6 +75,13 @@ package com.pblabs.engine.entity
             deferring = false;
         }
         
+        
+        /**
+         * Destroys the Entity by removing all components and unregistering it from
+         * the name manager.
+         *
+         * @see IPBObject.destroy
+         */
         public override function destroy():void
         {
             // Give listeners a chance to act before we start destroying stuff.
@@ -88,14 +103,25 @@ package com.pblabs.engine.entity
             super.destroy();
         }
         
+        /**
+         * Serializes an entity. Pass in the current XML stream, and it automatically
+         * adds itself to it.
+         * @param	xml the <things> XML stream.
+         */
         public function serialize(xml:XML):void
         {
+            var entityXML:XML = <entity name={name} />;
+            if(alias!=null)
+                entityXML = <entity name={name} alias={alias} />;   
+            
             for each (var component:IEntityComponent in _components)
             {        	
-                var componentXML:XML = <component type={getQualifiedClassName(component).replace(/::/,".")} name={name} />;
+                var componentXML:XML = <component type={getQualifiedClassName(component).replace(/::/,".")} name={component.name} />;
                 Serializer.instance.serialize(component, componentXML);
-                xml.appendChild(componentXML);
+                entityXML.appendChild(componentXML);
             }
+
+            xml.appendChild(entityXML);            
         }
         
         public function deserialize(xml:XML, registerComponents:Boolean = true):void

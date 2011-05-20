@@ -36,6 +36,9 @@ package com.pblabs.box2D
      */
     public class Box2DSpatialComponent extends EntityComponent implements IMobileSpatialObject2D
     {
+		[EditorData(ignore="true")]
+        public var onAddedCallback:Function = null;
+
         public function get spatialManager():Box2DManagerComponent
         {
             return _manager;
@@ -52,12 +55,14 @@ package com.pblabs.box2D
             _manager = value;
         }
         
+		[EditorData(ignore="true")]
         public function get manager():Box2DManagerComponent
         {
             Logger.warn(this, "get manager", "manager is deprecated; switch to spatialManager.");
             return spatialManager;
         }
         
+		[EditorData(ignore="true")]
         public function set manager(value:Box2DManagerComponent):void
         {
             spatialManager = value;
@@ -75,6 +80,7 @@ package com.pblabs.box2D
         /**
          * @inheritDoc
          */
+		[EditorData(ignore="true")]
         public function get objectMask():ObjectType
         {
             return _collidesWithTypes;
@@ -370,6 +376,9 @@ package com.pblabs.box2D
                     angularVelocity = _angularVelocity;
                     
                     buildCollisionShapes();
+					
+                    if (onAddedCallback != null)
+                        onAddedCallback(this);
                 });
         }
         

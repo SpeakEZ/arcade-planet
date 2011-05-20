@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.engine.resource.provider
 {
 	import com.pblabs.engine.debug.Logger;
@@ -77,6 +85,12 @@ package com.pblabs.engine.resource.provider
                 return;
             }
         }
+		
+		public override function unloadResource(uri:String, type:Class):void
+		{
+			// no unloading of embedded resource
+		}
+		
 		
 		// ------------------------------------------------------------
 		// private and protected variables

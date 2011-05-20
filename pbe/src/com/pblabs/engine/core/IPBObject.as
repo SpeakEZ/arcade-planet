@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.engine.core
 {
     /**
@@ -56,7 +64,7 @@ package com.pblabs.engine.core
          * the name manager.
          * 
          * <p>PBObjects are automatically removed from any groups/sets that they
-         * are members of when they are destroy()'ed.</P>
+         * are members of when they are destroy()'ed.</p>
          * 
          * <p>Currently this will not invalidate any other references to the PBObject
          * so the PBObject will only be cleaned up by the garbage collector if those

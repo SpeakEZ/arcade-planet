@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine.serialization
 {
+    import com.pblabs.engine.core.SchemaGenerator;
     import com.pblabs.engine.debug.Logger;
     
     import flash.utils.Dictionary;
@@ -93,12 +94,19 @@ package com.pblabs.engine.serialization
             // Give it a shot!
             try
             {
+				
                 return new (getDefinitionByName(className));
             }
             catch (e:Error)
-            {
+            {												
                 if(!suppressError)
                 {
+					// if we can not get the definition, it might reside in another swf
+					// so lets see if we can get the class from the _classes dictionary.
+					var thisClass:Class = _classes[className];
+					if (thisClass!=null) 
+						return new thisClass();
+					
                     Logger.warn(null, "Instantiate", "Failed to instantiate " + className + " due to " + e.toString());
                     Logger.warn(null, "Instantiate", "Is " + className + " included in your SWF? Make sure you call PBE.registerType(" + className + "); somewhere in your project.");				 
                 }
@@ -179,11 +187,62 @@ package com.pblabs.engine.serialization
                 // Scan for TypeHint metadata.
                 for each (var metadataXML:XML in variable.*)
                 {
-                    if (metadataXML.@name == "TypeHint")
-                        return metadataXML.arg.@value.toString();
+                    if(metadataXML.@name == "TypeHint")
+                    {
+                        var value:String = metadataXML.arg.@value.toString();
+                        
+                        return value;
+                        /*
+                        if (value == "dynamic")
+                        {
+                            if (!isNaN(object[field]))
+                            {
+                                // Is a number...
+                                return getQualifiedClassName(1.0);
+                            }
+                            else
+                            {
+                                return getQualifiedClassName(object[field]);
+                            }
+                        }
+                        else
+                        {
+                            return value;
+                        }
+                        */
+                    }
                 }
             }
             
+            return null;
+        }
+          
+        /**
+         * Get the xml for the metadata of the field.
+         */
+        public static function getEditorData(object:*, field:String):XML
+        {
+            var description:XML = getTypeDescription(object);
+            if (!description)
+                return null;
+            
+            for each (var variable:XML in description.*)
+            {
+                // Skip if it's not the field we want.
+                if (variable.@name != field)
+                    continue;
+                
+                // Only check variables/accessors.
+                if (variable.name() != "variable" && variable.name() != "accessor")
+                    continue;
+                
+                // Scan for EditorData metadata.
+                for each (var metadataXML:XML in variable.*)
+                {
+                    if (metadataXML.@name == "EditorData")
+                        return metadataXML;
+                }
+            }
             return null;
         }
         
@@ -230,7 +289,13 @@ package com.pblabs.engine.serialization
             
             return _typeDescriptions[className];
         }
+		
+		public static function addClass(className:String , classObject:Class):void
+		{
+			_classes[className] = classObject;			
+		}
         
+		private static var _classes:Dictionary = new Dictionary();
         private static var _typeDescriptions:Dictionary = new Dictionary();
         private static var _instantiators:Dictionary = new Dictionary();
     }

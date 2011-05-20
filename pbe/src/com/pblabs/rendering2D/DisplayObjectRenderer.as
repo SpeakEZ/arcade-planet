@@ -1,5 +1,14 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.rendering2D
 {
+    import com.pblabs.engine.PBE;
     import com.pblabs.engine.PBUtil;
     import com.pblabs.engine.components.AnimatedComponent;
     import com.pblabs.engine.core.ObjectType;
@@ -11,7 +20,6 @@ package com.pblabs.rendering2D
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
-    
     /**
      * Base renderer for Rendering2D. It wraps a DisplayObject, allows it
      * to be controlled by PropertyReferences, and hooks it into a scene.
@@ -122,6 +130,11 @@ package com.pblabs.rendering2D
         
         protected var _inScene:Boolean = false;
         
+		public function DisplayObjectRenderer()
+		{
+			_scene = PBE.scene;	// Default scene to PBE.scene
+		}
+		
         public function get layerIndex():int
         {
             return _layerIndex;
@@ -511,6 +524,9 @@ package com.pblabs.rendering2D
             
             _displayObject = value;
             
+            if(name && owner && owner.name)
+                _displayObject.name = owner.name + "." + name;
+            
             // Add new scene.
             addToScene();
         }
@@ -588,7 +604,12 @@ package com.pblabs.rendering2D
         override protected function onAdd() : void
         {
             super.onAdd();
+			            
+            if(_displayObject)
+                _displayObject.name = owner.name + "." + name;
             
+			addToScene();
+			
             // Make sure we start with a correct transform.
             updateTransform(true);
         }
@@ -652,7 +673,7 @@ package com.pblabs.rendering2D
             // Maybe we were in the right layer, but have the wrong zIndex.
             if (_zIndexDirty && _scene)
             {
-                _scene.getLayer(_layerIndex).markDirty();
+                _scene.getLayer(_layerIndex, true).markDirty();
                 _zIndexDirty = false;
             }
             

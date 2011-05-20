@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.components.stateMachine
 {
     import com.pblabs.engine.components.TickedComponent;
@@ -12,7 +20,7 @@ package com.pblabs.components.stateMachine
          * user to always specify which FSM they want (since there is only
          * one).
          */ 
-        public var stateMachine:Machine;
+        public var stateMachine:Machine = new Machine();
         
         /**
          * If true, don't advance state machine logic.

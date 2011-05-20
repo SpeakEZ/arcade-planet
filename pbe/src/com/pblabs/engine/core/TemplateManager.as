@@ -8,16 +8,16 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
-	import com.pblabs.engine.entity.allocateEntity;
-	import com.pblabs.engine.entity.IEntity;
+	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.debug.Profiler;
+	import com.pblabs.engine.entity.IEntity;
+	import com.pblabs.engine.entity.allocateEntity;
 	import com.pblabs.engine.resource.ResourceManager;
 	import com.pblabs.engine.resource.XMLResource;
 	import com.pblabs.engine.serialization.Serializer;
 	import com.pblabs.engine.serialization.TypeUtility;
-    import com.pblabs.engine.PBE;
-
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
@@ -80,9 +80,9 @@ package com.pblabs.engine.core
 		 *
 		 * @param filename The file to load.
 		 */
-		public function loadFile(filename:String):void
+		public function loadFile(filename:String, forceReload:Boolean = false):void
 		{
-			PBE.resourceManager.load(filename, XMLResource, onLoaded, onFailed);
+			PBE.resourceManager.load(filename, XMLResource, onLoaded, onFailed, forceReload);
 		}
 
 		/**
@@ -269,6 +269,7 @@ package com.pblabs.engine.core
 		public function addXML(xml:XML, identifier:String, version:int):void
 		{
 			var name:String=xml.attribute("name");
+
 			if (name.length == 0)
 			{
 				Logger.warn(this, "AddXML", "XML object description added without a 'name' attribute.");
@@ -335,6 +336,16 @@ package com.pblabs.engine.core
 		}
 
 		/**
+		 * Check if a template method by the provided name has been registered.
+		 * @param name Name of the template registered with the TemplateManager
+		 * @return true if the template exists, false if it does not.
+		 */		
+		public function hasEntityCallback(name:String):Boolean
+		{
+			return _things[name];
+		}
+		
+		/**
 		 * Register a callback-powered entity with the TemplateManager. Instead of
 		 * parsing and returning an entity based on XML, this lets you directly
 		 * create the entity from a function you specify.
@@ -346,7 +357,7 @@ package com.pblabs.engine.core
 		 *
 		 * @param name Name of the entity.
 		 * @param callback A function which takes no arguments and returns an IEntity.
-		 * @see UnregisterEntityCallback, RegisterGroupCallback
+		 * @see UnregisterEntityCallback, RegisterGroupCallback, hasEntityCallback
 		 */
 		public function registerEntityCallback(name:String, callback:Function):void
 		{
@@ -470,7 +481,22 @@ package com.pblabs.engine.core
 			var xml:XML=getXML(name, "group");
 			if (!xml)
 				throw new Error("Could not find group '" + name + "'");
+                
+            //Create the group:
+            var actualGroup:PBGroup = new PBGroup();
+            if(name != PBE.rootGroup.name)
+            {
+                actualGroup.initialize(name);
+                actualGroup.owningGroup = PBE.currentGroup;
+            }
+            else
+            {
+                actualGroup = PBE.rootGroup;
+            }
 
+            var oldGroup:PBGroup = PBE.currentGroup;
+            PBE.currentGroup = actualGroup;    
+            
 			for each (var objectXML:XML in xml.*)
 			{
 				var childName:String=objectXML.attribute("name");
@@ -496,7 +522,7 @@ package com.pblabs.engine.core
 				}
 				else if (objectXML.name() == "objectReference")
 				{
-					_inGroup=true;
+					_inGroup = true;
 					group.push(instantiateEntity(childName));
 					_inGroup=false;
 				}
@@ -505,6 +531,8 @@ package com.pblabs.engine.core
 					Logger.warn(this, "instantiateGroup", "Encountered unknown tag " + objectXML.name() + " in group.");
 				}
 			}
+            
+            PBE.currentGroup = oldGroup;
 
 			Serializer.instance.reportMissingReferences();
 

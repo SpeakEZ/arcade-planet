@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.sound
 {
     import com.pblabs.engine.debug.Logger;
@@ -31,13 +39,16 @@ package com.pblabs.sound
         
         public function get transform():SoundTransform
         {
+            if(!channel)
+                return new SoundTransform();
             return channel.soundTransform;
         }
 
         public function set transform(value:SoundTransform):void
         {
             dirty = true;
-            channel.soundTransform = value;
+            if(channel)
+                channel.soundTransform = value;
         }
 
         public function get volume():Number

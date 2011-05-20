@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * PushButton Engine
+ * Copyright (C) 2009 PushButton Labs, LLC
+ * For more information see http://www.pushbuttonengine.com
+ *
+ * This file is licensed under the terms of the MIT license, which is included
+ * in the License.html file at the root directory of this SDK.
+ ******************************************************************************/
 package com.pblabs.rendering2D
 {
     import com.pblabs.engine.PBE;
@@ -42,8 +50,12 @@ package com.pblabs.rendering2D
          */
         public function set sceneAlignment(value:SceneAlignment):void
         {
-            _sceneAlignment = value;
-            _transformDirty = true;
+			if (value != _sceneAlignment)
+			{
+            	_sceneAlignment = value;
+            	_transformDirty = true;
+				updateTransform();
+			}
         }
 
         /**
@@ -220,6 +232,7 @@ package com.pblabs.rendering2D
          * The IUITarget to which we will be displaying the scene. A scene can
          * only draw to on IUITarget at a time.
          */
+        [EditorData(ignore="true")]
         public function set sceneView(value:IUITarget):void
         {
             if(_sceneView)
@@ -395,7 +408,7 @@ package com.pblabs.rendering2D
             return results.length > 0 ? true : false;
         }
         
-        protected function getRendererForDisplayObject(displayObject:DisplayObject):DisplayObjectRenderer
+        public function getRendererForDisplayObject(displayObject:DisplayObject):DisplayObjectRenderer
         {
             var current:DisplayObject = displayObject;
             
@@ -511,8 +524,11 @@ package com.pblabs.rendering2D
         }
         public function set rotation(value:Number):void
         {
-            _rootRotation = value;
-            _transformDirty = true;
+			if (_rootRotation != value)
+			{
+            	_rootRotation = value;
+            	_transformDirty = true;
+			}
         }
         
         public function get position():Point
@@ -524,7 +540,7 @@ package com.pblabs.rendering2D
         {
             if (!value)
                 return;
-            
+            						
             var newX:int = int(value.x);
             var newY:int = int(value.y);
             
@@ -533,6 +549,17 @@ package com.pblabs.rendering2D
                 
             _rootPosition.x = newX;
             _rootPosition.y = newY;
+									
+			// Apply limit to camera movement.
+			if(trackLimitRectangle != null)
+			{
+				var centeredLimitBounds:Rectangle = new Rectangle( trackLimitRectangle.x     + (sceneView.width * 0.5) / zoom, trackLimitRectangle.y      + (sceneView.height * 0.5) / zoom,
+					trackLimitRectangle.width - (sceneView.width / zoom)      , trackLimitRectangle.height - (sceneView.height/zoom) );
+				
+				_rootPosition.x = PBUtil.clamp(_rootPosition.x, -centeredLimitBounds.right, -centeredLimitBounds.left );
+				_rootPosition.y = PBUtil.clamp(_rootPosition.y, -centeredLimitBounds.bottom, -centeredLimitBounds.top);
+			}
+						
             _transformDirty = true;
         }
         

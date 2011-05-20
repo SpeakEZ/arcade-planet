@@ -9,15 +9,16 @@
 package com.pblabs.rendering2D
 {
     import com.pblabs.engine.entity.PropertyReference;
+    import com.pblabs.rendering2D.modifier.Modifier;
     import com.pblabs.rendering2D.spritesheet.SpriteContainerComponent;
     
+    import flash.display.Bitmap;
     import flash.display.BitmapData;
+    import flash.display.Sprite;
+    import flash.geom.Point;
     
 	public class SpriteSheetRenderer extends BitmapRenderer
-	{
-	    private var _spriteSheet:SpriteContainerComponent;
-	    private var _setRegistration:Boolean = false;
-		
+	{		
 	    public var spriteSheet:SpriteContainerComponent;
         public var spriteIndex:int = 0;
 		public var directionReference:PropertyReference;
@@ -27,31 +28,48 @@ package com.pblabs.rendering2D
             if (!spriteSheet || !spriteSheet.isLoaded)
                 return null;
             
-            //if (!_setRegistration) for garnee's sake.
+			
+			var curFrame:BitmapData;
+			if(directionReference)
+				curFrame = spriteSheet.getFrame(spriteIndex, owner.getProperty(directionReference) as Number);
+			else
+				curFrame = spriteSheet.getFrame(spriteIndex);
+			
             // Our registration point is the center of a frame as specified by the spritesheet
 	        if(spriteSheet && spriteSheet.isLoaded && spriteSheet.center)
-            {
-	            registrationPoint = spriteSheet.center.clone();
-                registrationPoint.x *= -1;
-                registrationPoint.y *= -1;
-            }
-	        
-	        _setRegistration = true;
+			{
+	            registrationPoint = spriteSheet.center.clone();					
+			}
+			
+			return curFrame;
             
-			if(directionReference)
-				return spriteSheet.getFrame(spriteIndex, owner.getProperty(directionReference) as Number);
-			else
-            	return spriteSheet.getFrame(spriteIndex);
         }
-        
+						
+		protected override function dataModified():void
+		{
+			// set the registration (alignment) point to the sprite's center
+			if (spriteSheet.centered)
+			  registrationPoint = new Point(bitmapData.width/2,bitmapData.height/2);
+		}
+		
+		protected override function modify(data:BitmapData):BitmapData
+		{
+			// this function is overridden so spriteIndex can be passed to 
+			// the applied modifiers
+			for (var m:int = 0; m<modifiers.length; m++)
+				data = (modifiers[m] as Modifier).modify(data, spriteIndex, spriteSheet.frameCount);
+			return data;            
+		}
+				
         override public function onFrame(elapsed:Number) : void
         {
-            super.onFrame(elapsed);
-            
             // Update the bitmapData.
             var targetBD:BitmapData = getCurrentFrame();
-            if(bitmapData !== targetBD)
-                bitmapData = targetBD;
+			if(bitmapData != targetBD && targetBD!=null)
+				bitmapData = targetBD;
+			
+			if (targetBD!=null)
+			  super.onFrame(elapsed);
         }
 	}
 }

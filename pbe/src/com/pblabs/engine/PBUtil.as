@@ -64,7 +64,7 @@ package com.pblabs.engine
 		 * Clones an array.
 		 * @param array Array to clone.
 		 * @return a cloned array.
-		 */		
+		 */
 		public static function cloneArray(array:Array):Array
 		{
 			var newArray:Array = [];
@@ -75,21 +75,21 @@ package com.pblabs.engine
 			return newArray;
 		}
 		
-        /**
-         * Take a radian measure and make sure it is between -pi..pi.
-         */
-        public static function unwrapRadian(r:Number):Number
-        {
-            r = r % Math.PI;
-            if (r > Math.PI)
-                r -= TWO_PI;
-            if (r < -Math.PI)
-                r += TWO_PI;
-            return r;
-        }
+		/**
+		 * Take a radian measure and make sure it is between -pi..pi. 
+		 */
+		public static function unwrapRadian(r:Number):Number 
+		{ 
+			r = r % TWO_PI;
+			if (r > Math.PI) 
+				r -= TWO_PI; 
+			if (r < -Math.PI) 
+				r += TWO_PI; 
+			return r; 
+		} 
         
         /**
-         * Take a degree measure and make sure it is between 0..360.
+         * Take a degree measure and make sure it is between -180..180.
          */
         public static function unwrapDegrees(r:Number):Number
         {
@@ -115,9 +115,9 @@ package com.pblabs.engine
             
             // Make sure delta is shortest path around circle.
             if(delta > Math.PI)
-                delta -= Math.PI * 2;            
+                delta -= TWO_PI;            
             if(delta < -Math.PI)
-                delta += Math.PI * 2;            
+                delta += TWO_PI;            
             
             // Done
             return delta;
@@ -153,8 +153,15 @@ package com.pblabs.engine
          */
         public static function getBitCountForRange(max:int):int
         {
-            // TODO: Make this use bits and be fast.
-            return Math.ceil(Math.log(max) / Math.log(2.0));
+			var count:int = 0;
+
+			// Unfortunately this is a bug with this method... and requires this special
+			// case (same issue with the old method log calculation)
+			if (max == 1) return 1;
+
+			max--;
+			while (max >> count > 0) count++;
+			return count;
         }
         
         /**
@@ -180,7 +187,7 @@ package com.pblabs.engine
          * easier internal processing and validation.</p>
          * 
          * @param source Object to read fields from.
-         * @param dest Object to assign fields to.
+         * @param destination Object to assign fields to.
          * @param abortOnMismatch If true, throw an error if a field in source is absent in destination.
          * 
          */
@@ -238,7 +245,89 @@ package com.pblabs.engine
 			
 			return str;
 		}
+		
+		/**
+		 * Converts a String to a Boolean. This method is case insensitive, and will convert 
+		 * "true", "t" and "1" to true. It converts "false", "f" and "0" to false.
+		 * @param str String to covert into a boolean. 
+		 * @return true or false
+		 */		
+		public static function stringToBoolean(str:String):Boolean
+		{
+			switch(str.substring(1, 0).toUpperCase())
+			{
+				case "F":
+				case "0":
+					return false;
+					break;
+				case "T":
+				case "1":
+					return true;
+					break;
+			}
+			
+			return false;
+		}
         
+		/**
+		 * Capitalize the first letter of a string 
+		 * @param str String to capitalize the first leter of
+		 * @return String with the first letter capitalized.
+		 */		
+		public static function capitalize(str:String):String
+		{
+			return str.substring(1, 0).toUpperCase() + str.substring(1);
+		}
+		
+		/**
+		 * Removes all instances of the specified character from 
+		 * the beginning and end of the specified string.
+		 */
+		public static function trim(str:String, char:String):String {
+			return trimBack(trimFront(str, char), char);
+		}
+		
+		/**
+		 * Recursively removes all characters that match the char parameter, 
+		 * starting from the front of the string and working toward the end, 
+		 * until the first character in the string does not match char and returns 
+		 * the updated string.
+		 */		
+		public static function trimFront(str:String, char:String):String
+		{
+			char = stringToCharacter(char);
+			if (str.charAt(0) == char) {
+				str = trimFront(str.substring(1), char);
+			}
+			return str;
+		}
+		
+		/**
+		 * Recursively removes all characters that match the char parameter, 
+		 * starting from the end of the string and working backward, 
+		 * until the last character in the string does not match char and returns 
+		 * the updated string.
+		 */		
+		public static function trimBack(str:String, char:String):String
+		{
+			char = stringToCharacter(char);
+			if (str.charAt(str.length - 1) == char) {
+				str = trimBack(str.substring(0, str.length - 1), char);
+			}
+			return str;
+		}
+		
+		/**
+		 * Returns the first character of the string passed to it. 
+		 */		
+		public static function stringToCharacter(str:String):String 
+		{
+			if (str.length == 1) {
+				return str;
+			}
+			return str.slice(0, 1);
+		}
+		
         /**
          * Determine the file extension of a file. 
          * @param file A path to a file.
@@ -269,11 +358,11 @@ package com.pblabs.engine
 			switch (orientation) 
 			{
 				case FLIP_HORIZONTAL:
-					m.a = -1;
+					m.a = -1 * m.a;
 					m.tx = obj.width + obj.x;
 					break;
 				case FLIP_VERTICAL:
-					m.d = -1;
+					m.d = -1 * m.d;
 					m.ty = obj.height + obj.y;
 					break;
 			}
