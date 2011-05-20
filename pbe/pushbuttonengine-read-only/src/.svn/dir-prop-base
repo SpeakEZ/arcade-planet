@@ -1,6 +1,0 @@
-K 13
-svn:externals
-V 105
-com/adobe/serialization/json http://as3corelib.googlecode.com/svn/trunk/src/com/adobe/serialization/json
-
-END
