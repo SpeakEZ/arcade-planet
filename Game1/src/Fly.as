@@ -60,8 +60,7 @@ package
 			createHero();
 			
 			// Create a simple background entity
-			PBE.defineEntityByFunction("BG", EntityFactory.CreateBackground);
-			PBE.makeEntity("BG");
+			createBackground();
 			
 			// initialize score
 			createScore();
@@ -147,6 +146,13 @@ package
 			
 			ent.addComponent(spatial, "Spatial");
 		}
+		
+		private function createBackground():void
+		{
+			PBE.defineEntityByFunction("BG", EntityFactory.CreateBackground);
+			PBE.makeEntity("BG");
+		}
+		
 		private var score:ScoreController;
 		
 		// Initialize the score controller
