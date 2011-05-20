@@ -20,6 +20,7 @@ package
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.MovieClipRenderer;
+	import com.pblabs.rendering2D.SimpleShapeRenderer;
 	import com.pblabs.rendering2D.SimpleSpatialComponent;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	import com.pblabs.rendering2D.ui.SceneView;
@@ -137,7 +138,7 @@ package
 			var render:RenderObject 
 			= new RenderObject(
 				"Render",  					// Component name
-				"assets/bg_sunset2.jpg", 	// Component asset
+				"assets/bg_space.png", 	// Component asset
 				1,  						// Component layer
 				PBE.scene,					// Component scene
 				"@Spatial.position"			// Component position
@@ -174,6 +175,7 @@ package
 		// Initialize the score controller
 		private function createScore():void
 		{
+			// Setup score controller and default test score
 			var testScore:Score = new Score();
 			testScore.score = 100;
 			this.score = new ScoreController(this,testScore);

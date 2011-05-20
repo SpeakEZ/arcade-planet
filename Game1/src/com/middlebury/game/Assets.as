@@ -10,6 +10,9 @@ package com.middlebury.game
 		[Embed(source="assets/alien.swf")]
 		public var alien:Class;
 		
+		[Embed(source="assets/bg_space.png")]
+		public var space:Class;
+		
 		public function Assets()
 		{
 		}
