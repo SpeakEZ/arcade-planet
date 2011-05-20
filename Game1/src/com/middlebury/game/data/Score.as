@@ -24,6 +24,8 @@ package com.middlebury.game.data
 		
 		public function updateScore(value:Number):void
 		{
+			if(isNaN(_total))
+				_total = 0;
 			_total += value;
 		}
 		
@@ -36,11 +38,15 @@ package com.middlebury.game.data
 		
 		public function get score():Number
 		{
+			if(isNaN(_score))
+				_score = 0;
 			return _score;
 		}
 		private var _total:Number;
 		public function get total():Number
 		{
+			if(isNaN(_total))
+				_total = 0;
 			return _total;
 		}
 		private var _max:Number;
@@ -51,6 +57,8 @@ package com.middlebury.game.data
 		
 		public function get max():Number
 		{
+			if(isNaN(_max))
+				_max = 0;
 			return _max;
 		}
 	}

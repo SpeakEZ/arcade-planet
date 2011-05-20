@@ -25,33 +25,21 @@ package com.middlebury.game.controller
 	 * @author geo
 	 * 
 	 */
-	public class ScoreController
+	public class ScoreController implements IScore
 	{	
 		public function ScoreController(dispatcher:IEventDispatcher=null,score:IScore=null)
 		{
 			this.dispatcher = dispatcher;
-			this.score = score;
+			this.iscore = score;
 		}
 		
-		public function handleEvent(event:ScoreEvent):void
+		public function handleEvent(event:Event):void
 		{
 			if(event && event is ScoreEvent) {
-				switch (event.type) {
-					case ScoreEvent.INIT: 			// init both max and score
-						score.max = event.max;
-						score.score = event.score;
-						break;
-					case ScoreEvent.UPDATE_MAX: 	// update max
-						score.max = event.max;
-						break;
-					case ScoreEvent.UPDATE_SCORE: 	// update score
-						score.score = event.score;
-						break;
-					case ScoreEvent.SCORE:			// generic
-						break;
-					default:
-						break;
-				}
+				if((event as ScoreEvent).iscore)
+					iscore = (event as ScoreEvent).iscore;
+			} else {
+				Debug.log("ScoreController->handleEvent event null || !score",Debug.RED);
 			}
 		}
 		
@@ -68,17 +56,54 @@ package com.middlebury.game.controller
 			}
 		}
 		
-		private var _score:IScore;
-		public function get score():IScore
+		private var _iscore:IScore;
+		public function get iscore():IScore
 		{
 			if(!_score)
-				_score = new Score();
-			return _score;
+				_iscore = new Score();
+			return _iscore;
 		}
 
-		public function set score(value:IScore):void
+		public function set iscore(value:IScore):void
+		{
+			_iscore = value;
+			if(value) {
+				score = value.score;
+				max = value.max;
+				_total = value.total;
+			}
+		}
+		
+		private var _score:Number;
+		public function set score(value:Number):void
 		{
 			_score = value;
+		}
+		
+		public function get score():Number
+		{
+			if(isNaN(_score))
+				_score = 0;
+			return _score;
+		}
+		private var _total:Number;
+		public function get total():Number
+		{
+			if(isNaN(_total))
+				_total = 0;
+			return _total;
+		}
+		private var _max:Number;
+		public function set max(value:Number):void
+		{
+			_max = value;
+		}
+		
+		public function get max():Number
+		{
+			if(isNaN(_max))
+				_max = 0;
+			return _max;
 		}
 
 	}
