@@ -38,6 +38,9 @@ package
 	[SWF(width="800", height="500", frameRate="60")]
 	public class Fly extends Sprite
 	{
+		
+		protected var score:ScoreController;
+
 		public function Fly()
 		{
 			setupTheGame();
@@ -85,6 +88,17 @@ package
 			PBE.makeEntity("Terrain");
 		}
 		
+		
+		private function createScene():void 
+		{
+			var sceneView:SceneView = new SceneView();
+			sceneView.width = 800;
+			sceneView.height = 500;
+			   
+			PBE.initializeScene(sceneView);          
+		}
+               
+
 		
 		// Initialize the score controller
 		private function createScore():void
