@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine.debug
 {
+    import com.middlebury.game.util.Debug;
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.serialization.TypeUtility;
 
@@ -86,7 +87,7 @@ package com.pblabs.engine.debug
                 pendingEntries.push(entry);
                 return;
             }
-            
+            Debug.log(entry.message);
             // Let all the listeners process it.
             for(var i:int=0; i<listeners.length; i++)
                 (listeners[i] as ILogAppender).addLogMessage(entry.type, TypeUtility.getObjectClassName(entry.reporter), entry.message);

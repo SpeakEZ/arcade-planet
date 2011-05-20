@@ -1,16 +1,29 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// 	MIDDLEBURY INTERACTIVE LANGUAGES
+//  Copyright 2011 Middlebury Interactive Languages
+//  All Rights Reserved.
+//
+////////////////////////////////////////////////////////////////////////////////
 package com.middlebury.game.controller
 {
 	import com.pblabs.engine.components.TickedComponent;
 	import com.pblabs.engine.entity.PropertyReference;
-	import com.pblabs.rendering2D.MovieClipRenderer;
+	import com.pblabs.rendering2D.SpriteRenderer;
 	
 	import flash.geom.Point;
-	
+	/**
+	 * <p>Background image controller. onTick updates background.</p>
+	 * @see com.pblabs.engine.components.TickedComponent
+	 * @author geo
+	 * 
+	 */	
 	public class BackgroundController extends TickedComponent
 	{
-		public var TrackObject:MovieClipRenderer = null;
-		public var BGImagePositionReference:PropertyReference = null;
-		public var MovementScale:Number = 1;
+		public var trackingObject:SpriteRenderer = null;
+		public var positionRef:PropertyReference = null;
+		public var movement:Number = 0.3;
+		
 		public function BackgroundController()
 		{
 			super();
@@ -20,13 +33,14 @@ package com.middlebury.game.controller
 		{
 			super.onTick(tickRate);
 			
-			var playerPosition:Point = TrackObject.renderPosition;
+			var playerPosition:Point = trackingObject.renderPosition;
 			
-			var bgPosition:Point = new Point(
-				(playerPosition.x * MovementScale), 
-				(playerPosition.y * MovementScale));
+			// Move x as player moves, don't move y?
+			var bgPosition:Point 
+				= new Point((playerPosition.x * -movement), 0);
 			
-			owner.setProperty(BGImagePositionReference, bgPosition);			
+			// Set property on owner background
+			owner.setProperty(positionRef, bgPosition);			
 		}
 	}
 }

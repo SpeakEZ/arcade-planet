@@ -11,12 +11,8 @@ package com.middlebury.game.controller
 	import com.middlebury.game.display.RenderObject;
 	import com.pblabs.box2D.Box2DSpatialComponent;
 	import com.pblabs.engine.PBE;
-	import com.pblabs.engine.core.NameManager;
-	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
-	import com.pblabs.rendering2D.MovieClipRenderer;
-	import com.pblabs.rendering2D.SimpleSpatialComponent;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	
 	import flash.geom.Point;
@@ -110,7 +106,7 @@ package com.middlebury.game.controller
 			spatial.position = new Point(0,0);
 			// Create a render object give it an asset, layer and scene
 			var render:RenderObject 
-				= new RenderObject("assets/bg_space.png",1,PBE.scene);
+				= new RenderObject("assets/colorful-star-field.jpg",1,PBE.scene);
 				
 			// Create render display object
 			var terrain:Display = new Display(render);
@@ -119,13 +115,13 @@ package com.middlebury.game.controller
 			entity.addComponent(spatial, "Spatial"); 
 			entity.addComponent( terrain, terrain.renderObject.name );
 			
-			var playerRender:MovieClipRenderer = PBE.lookupComponentByName(
-				"Hero", "Render") as MovieClipRenderer;    
+			var playerRender:SpriteRenderer = PBE.lookupComponentByName(
+				"Hero", "Render") as SpriteRenderer;    
 			
 			var bgController:BackgroundController = new BackgroundController();
-			bgController.TrackObject = playerRender; 
-			bgController.BGImagePositionReference = new PropertyReference("@Spatial.position");
-			bgController.MovementScale = 0.3;
+			bgController.trackingObject = playerRender; 
+			bgController.positionRef = new PropertyReference("@Spatial.position");
+			bgController.movement = 0.1;
 			entity.addComponent(bgController, "BackgroundController");
 			
 			return entity;
