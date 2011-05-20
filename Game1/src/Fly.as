@@ -98,10 +98,10 @@ package
 			// Create a simple render component to display our object
 			
 			// Here we've removed the reference to our simple shape renderer, and added a sprite render component.
-			var render:MovieClipRenderer = new MovieClipRenderer();
+			var render:SpriteRenderer = new SpriteRenderer();
 			
 			// Tell the Render component to use one of the images embedded by our ResourceBundle
-			render.fileName = "assets/alien.swf";
+			render.fileName = "assets/alien.png";
 			
 			// Add the renderer to the scene.
 			render.scene = PBE.scene;
