@@ -67,10 +67,7 @@ package
 			createScore();
 			
 			// initialize lives
-			PBE.defineEntityByFunction("Lives", EntityFactory.CreateLives);
-			PBE.makeEntity("Lives");
-			PBE.defineEntityByFunction("Lives2", EntityFactory.CreateLives2);
-			PBE.makeEntity("Lives2");
+			createLives();
 			
 			ScreenManager.instance.registerScreen("game", new GameScreen(score));
 			ScreenManager.instance.goto("game");
@@ -159,6 +156,15 @@ package
 			var testScore:Score = new Score();
 			testScore.score = 100;
 			this.score = new ScoreController(this,testScore);
+		}
+		
+		private var maxLives:int = 6;
+		private function createLives():void
+		{
+			for(var i:int = 1; i < maxLives; i++) {
+				PBE.defineEntityByFunction("Life"+EntityFactory.lives, EntityFactory.AddLife);
+				PBE.makeEntity("Life"+EntityFactory.lives);
+			}
 		}
 
 	}
