@@ -11,6 +11,7 @@ package com.middlebury.game.controller
 	import com.middlebury.game.display.RenderObject;
 	import com.pblabs.box2D.Box2DSpatialComponent;
 	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.SimpleSpatialComponent;
@@ -20,54 +21,69 @@ package com.middlebury.game.controller
 
 	public class EntityFactory
 	{
-		public static function CreateLives():IEntity
+		
+		// Life static variables
+		public static var lives:int = 1;
+		private static var livesStartPt:Point = new Point(-355,-215);
+		private static var lifeSize:Point = new Point(10,10);
+		
+		
+		public static function AddLife():IEntity
 		{
-			var entity:IEntity = PBE.allocateEntity();                                 
-			entity.initialize("Lives");      
+			// Generate a life element
+			var entity:IEntity = generateLife("Life"+lives, lives);     
 			
-			var spatial:Box2DSpatialComponent = new Box2DSpatialComponent();
-			spatial.canMove = false;
-			spatial.canRotate = false;
-			spatial.position = new Point(-345,-215);
-			spatial.size = new Point(10,10);
-			
-			// Create a render object give it an asset, layer and scene
-			var render:RenderObject 
-				= new RenderObject("assets/dot.png",2,PBE.scene);
-				
-			// Create render display object
-			var life:Display = new Display(render);
-			
-			entity.addComponent(spatial, "Spatial"); 
-			entity.addComponent( life, life.renderObject.name );                                                                       
-			
+			// Increment lives
+			lives++;
 			return entity;			
 		}
 		
-		public static function CreateLives2():IEntity
+		private static function generateLife(name:String,life:int):IEntity
 		{
 			var entity:IEntity = PBE.allocateEntity();                                 
-			entity.initialize("Lives2");      
+			entity.initialize(name);      
 			
-			var spatial:Box2DSpatialComponent = new Box2DSpatialComponent();
-			spatial.canMove = false;
-			spatial.canRotate = false;
-			spatial.position = new Point(-335,-215);
-			spatial.size = new Point(10,10);
+			// life position slide over by width
+			livesStartPt.x -= -lifeSize.x;
+			
+			// Get a entity component
+			var spatial:Box2DSpatialComponent = getSpatialComponent(livesStartPt,lifeSize);
 			
 			// Create a render object give it an asset, layer and scene
 			var render:RenderObject 
-			= new RenderObject("assets/dot.png",2,PBE.scene);
+			= new RenderObject("assets/dot.png",life,PBE.scene);
 			
 			// Create render display object
-			var life:Display = new Display(render);
+			var lfe:Display = new Display(render);
 			
 			entity.addComponent(spatial, "Spatial"); 
-			entity.addComponent( life, life.renderObject.name );                                                                       
+			entity.addComponent( lfe, lfe.renderObject.name );                                                                       
 			
-			return entity;			
+			return entity;		
 		}
 		
+		/**
+		 * <p>Generate a spatial 2d component for use with lives.</p> 
+		 * @param pos
+		 * @param size
+		 * @return 
+		 * 
+		 */		
+		private static function getSpatialComponent(pos:Point,size:Point):Box2DSpatialComponent
+		{
+			var spatial:Box2DSpatialComponent = new Box2DSpatialComponent();
+			spatial.canMove = false;
+			spatial.canRotate = false;
+			spatial.position = pos;
+			spatial.size = size;
+			return spatial;
+		}
+		
+		/**
+		 * <p>Create the background entity.</p> 
+		 * @return 
+		 * 
+		 */		
 		public static function CreateBackground():IEntity
 		{
 			// Allocate an entity for our background sprite
