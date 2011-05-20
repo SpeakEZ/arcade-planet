@@ -65,6 +65,9 @@ package
 			// load first leve from xml
 			LevelManager.instance.load("assets/LevelDescriptions.xml", 1);
 			
+			// Create terrain
+			createTerrain();
+			
 			// initialize score
 			createScore();
 			
@@ -75,7 +78,13 @@ package
 			ScreenManager.instance.goto("game");
 		}
 		
-		private var score:ScoreController;
+
+		private function createTerrain():void
+		{
+			PBE.defineEntityByFunction("Terrain",EntityFactory.CreateTerrain);
+			PBE.makeEntity("Terrain");
+		}
+		
 		
 		// Initialize the score controller
 		private function createScore():void

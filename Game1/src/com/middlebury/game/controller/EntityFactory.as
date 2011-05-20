@@ -105,7 +105,7 @@ package com.middlebury.game.controller
 			spatial.position = new Point(0,0);
 			// Create a render object give it an asset, layer and scene
 			var render:RenderObject 
-				= new RenderObject("assets/colorful-star-field.jpg",1,PBE.scene);
+				= new RenderObject("assets/stars.png",1,PBE.scene);
 				
 			// Create render display object
 			var terrain:Display = new Display(render);
@@ -126,5 +126,35 @@ package com.middlebury.game.controller
 			return entity;
 		}
 		 */		
+		
+		public static function CreateTerrain():IEntity
+		{
+			// Allocate an entity for our background sprite
+			var entity:IEntity = PBE.allocateEntity();
+			entity.initialize("Terrain");
+			
+			var spatial:Box2DSpatialComponent = getSpatialComponent(new Point(0,0),new Point(0,0));
+			// Create a render object give it an asset, layer and scene
+			var render:RenderObject 
+			= new RenderObject("assets/bottom_terrain.png",2,PBE.scene);
+			
+			// Create render display object
+			var terrain:Display = new Display(render);
+			
+			// Add our render component to the BG entity with the name "Render"
+			entity.addComponent(spatial, "Spatial"); 
+			entity.addComponent( terrain, terrain.renderObject.name );
+			
+			var playerRender:SpriteRenderer = PBE.lookupComponentByName(
+				"Hero", "Render") as SpriteRenderer;    
+			
+			var terrainControl:TerrainController = new TerrainController();
+			terrainControl.trackingObject = playerRender; 
+			terrainControl.positionRef = new PropertyReference("@Spatial.position");
+			terrainControl.movement = 0.9;
+			entity.addComponent(terrainControl, "TerrainController");
+			
+			return entity;
+		}
 	}
 }

@@ -23,8 +23,11 @@ package com.middlebury.game
 		[Embed(source="assets/dot.png")]
 		public var dot:Class;
 		
-		[Embed(source="assets/colorful-star-field.jpg")]
-		public var stars2:Class;
+		[Embed(source="assets/stars.png")]
+		public var stars:Class;
+		
+		[Embed(source="assets/bottom_terrain.png")]
+		public var bottom:Class;
 		
 		public function Assets()
 		{
