@@ -2,6 +2,8 @@
 .DS_Store
 .project
 .settings
+.flexLibProperties
 bin-debug
 html-template
 .svn
+pbe/bin
