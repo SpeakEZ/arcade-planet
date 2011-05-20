@@ -40,7 +40,7 @@
       <scene componentReference="flyIt"/>
       <layerIndex>2</layerIndex>
       <positionProperty>@Spatial.position</positionProperty>
-      <fileName>assets/bg_space.png</fileName>
+      <fileName>assets/colorful-star-field.jpg</fileName>
     </component>
   </entity>
   	

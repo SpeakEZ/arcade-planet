@@ -79,21 +79,7 @@ package com.middlebury.game.display
 		
 		public override function onShow() : void
 		{
-//			// create life icon
-//			var life:IEntity = PBE.allocateEntity();
-//			var spatial:SimpleSpatialComponent = new SimpleSpatialComponent();
-//			spatial.position = new Point(0,0);
-//			spatial.size = new Point(50,50);
-//			spatial.spatialManager = PBE.spatialManager;
-//			life.addComponent(spatial, "Spatial");
-//			var icon:SimpleShapeRenderer = getLifeIcon();
-//			icon.positionProperty = new PropertyReference("@Spatial.position");
-//			icon.rotationProperty = new PropertyReference("@Spatial.rotation");
-//			// Point the render component to this entity's Spatial component for size information
-//			icon.sizeProperty = new PropertyReference("@Spatial.size");
-//			
-//			life.addComponent(icon, "life");
-//			life.initialize("LF");
+			// do nothing
 		}
 		
 		/**
@@ -107,8 +93,6 @@ package com.middlebury.game.display
 			// Update score.
 			lblScore.caption = "Score: "+score.total;
 			lblScore.refresh();
-			
-			
 		}
 		/**
 		 * Gameplay logic happens here; in this game, the only thing is to check
@@ -116,7 +100,7 @@ package com.middlebury.game.display
 		 */
 		public override function onTick(delta:Number) : void
 		{		
-			// score?
+			// do nothing
 		}
 	}
 }

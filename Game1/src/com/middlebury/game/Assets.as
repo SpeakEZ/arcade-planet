@@ -22,5 +22,12 @@ package com.middlebury.game
 		
 		[Embed(source="assets/dot.png")]
 		public var dot:Class;
+		
+		[Embed(source="assets/colorful-star-field.jpg")]
+		public var stars2:Class;
+		
+		public function Assets()
+		{
+		}
 	}
 }

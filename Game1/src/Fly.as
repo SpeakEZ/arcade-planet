@@ -60,8 +60,9 @@ package
 			PBE.startup(this);
 			PBE.addResources(new Assets());
 			// setup our scene (defaults to size of stage)
-			PBE.initializeScene(new SceneView(), "flyIt"); 
+			PBE.initializeScene(new SceneView(), "flyIt");
 			
+			// load first leve from xml
 			LevelManager.instance.load("assets/LevelDescriptions.xml", 1);
 			
 			// initialize score
