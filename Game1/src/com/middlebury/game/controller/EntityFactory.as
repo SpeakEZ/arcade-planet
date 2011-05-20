@@ -83,7 +83,6 @@ package com.middlebury.game.controller
 		 * <p>Create the background entity.</p> 
 		 * @return 
 		 * 
-		 */		
 		public static function CreateBackground():IEntity
 		{
 			// Allocate an entity for our background sprite
@@ -107,5 +106,6 @@ package com.middlebury.game.controller
 			
 			return entity;
 		}
+		 */		
 	}
 }

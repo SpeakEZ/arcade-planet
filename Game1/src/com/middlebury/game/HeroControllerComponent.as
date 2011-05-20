@@ -7,7 +7,7 @@
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
 
-package Lesson5Final.src
+package com.middlebury.game
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.components.TickedComponent;
@@ -19,6 +19,10 @@ package Lesson5Final.src
     // Make a ticked component so that it can update itself every frame with onTick() 
     public class HeroControllerComponent extends TickedComponent
     {
+		public function HeroControllerComponent()
+		{
+				trace("Instantiating!");
+		}
         // Keep a property reference to our entity's position.
         public var positionReference:PropertyReference;
         

@@ -7,9 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 package
 {
-	import Lesson5Final.src.HeroControllerComponent;
 	
 	import com.middlebury.game.Assets;
+	import com.middlebury.game.HeroControllerComponent;
 	import com.middlebury.game.controller.EntityFactory;
 	import com.middlebury.game.controller.ScoreController;
 	import com.middlebury.game.data.Score;
@@ -17,12 +17,13 @@ package
 	import com.middlebury.game.display.GameScreen;
 	import com.middlebury.game.display.RenderObject;
 	import com.middlebury.game.events.ScoreEvent;
+	import com.pblabs.box2D.Box2DSpatialComponent;
 	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.core.LevelManager;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.MovieClipRenderer;
 	import com.pblabs.rendering2D.SimpleShapeRenderer;
-	import com.pblabs.rendering2D.SimpleSpatialComponent;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	import com.pblabs.rendering2D.ui.SceneView;
 	import com.pblabs.screens.ScreenManager;
@@ -47,21 +48,21 @@ package
 		 */
 		private function setupTheGame():void
 		{
-			// Start up PBE
+			// first, register all classes that are referenced in the xml
+			PBE.registerType(com.pblabs.rendering2D.MovieClipRenderer);
+			PBE.registerType(com.pblabs.rendering2D.SimpleShapeRenderer);
+			PBE.registerType(com.pblabs.rendering2D.SimpleSpatialComponent);
+			PBE.registerType(com.pblabs.rendering2D.SpriteRenderer);
+			PBE.registerType(com.pblabs.rendering2D.ui.SceneView);
+			PBE.registerType(com.pblabs.box2D.Box2DSpatialComponent);
+			PBE.registerType(com.middlebury.game.HeroControllerComponent);
+			
 			PBE.startup(this);
-		
-			// Load up our embedded resources
 			PBE.addResources(new Assets());
+			// setup our scene (defaults to size of stage)
+			PBE.initializeScene(new SceneView(), "flyIt"); 
 			
-			// Set up a simple scene entity
-			createScene();
-			
-			// Create an avatar entity
-			createHero();
-			
-			// Create a simple background entity
-			PBE.defineEntityByFunction("BG", EntityFactory.CreateBackground);
-			PBE.makeEntity("BG");
+			LevelManager.instance.load("assets/LevelDescriptions.xml", 1);
 			
 			// initialize score
 			createScore();
@@ -73,80 +74,6 @@ package
 			ScreenManager.instance.goto("game");
 		}
 		
-		private function createScene():void 
-		{
-			var sceneView:SceneView = new SceneView();
-			sceneView.width = 800;
-			sceneView.height = 500;
-			
-			PBE.initializeScene(sceneView);          
-		}
-		
-		
-		private function createHero():void
-		{
-			// Allocate an entity for our hero avatar
-			var hero:IEntity = PBE.allocateEntity();
-			
-			// Add our spatial component to the Hero entity ...
-			createSpatial( hero,
-				// with location of 0,150...
-				new Point(0, 150),
-				// and with size of 60,53...
-				new Point(30, 26)
-			);
-			
-			// Create a simple render component to display our object
-			
-			// Here we've removed the reference to our simple shape renderer, and added a sprite render component.
-			var render:SpriteRenderer = new SpriteRenderer();
-			
-			// Tell the Render component to use one of the images embedded by our ResourceBundle
-			render.fileName = "assets/alien.png";
-			
-			// Add the renderer to the scene.
-			render.scene = PBE.scene;
-			
-			// Set our hero to render above the background.
-			render.layerIndex = 10;
-			
-			// Point the render component to this entity's Spatial component for position information
-			render.positionProperty = new PropertyReference("@Spatial.position");
-			// Point the render component to this entity's Spatial component for size information
-			render.sizeProperty = new PropertyReference("@Spatial.size");
-			
-			// Add our render component to the Hero entity with the name "Render"
-			hero.addComponent( render, "Render" );
-			
-			// Create an instance of our hero controller component
-			var controller:HeroControllerComponent = new HeroControllerComponent();
-			// Point the controller component to this entity's Spatial component for position information
-			controller.positionReference = new PropertyReference("@Spatial.position");
-			
-			// Add the demo controller component to the Hero entity with the name "Controller"
-			hero.addComponent( controller, "Controller" );
-			
-			// Register the entity with PBE under the name "Hero"
-			hero.initialize("Hero");
-		}
-
-		// This is a shortcut function to help simplify the creation of spatial components
-		private function createSpatial( ent:IEntity, pos:Point, size:Point = null ):void
-		{
-			// Create our spatial component
-			var spatial:SimpleSpatialComponent = new SimpleSpatialComponent();
-			
-			// Do a named lookup to register our background with the scene spatial database
-			spatial.spatialManager = PBE.spatialManager;
-			
-			// Set our background position in space
-			spatial.position = pos;
-			
-			if (size != null) 
-				spatial.size = size;
-			
-			ent.addComponent(spatial, "Spatial");
-		}
 		private var score:ScoreController;
 		
 		// Initialize the score controller

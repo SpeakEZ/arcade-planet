@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<things version="1">
+
+  <entity name="Hero">
+    <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
+      <position type="">
+        <x>0</x>
+        <y>0</y>
+      </position>	
+      <size type="">
+        <x>80</x>
+        <y>63</y>
+      </size>
+      <spatialManager componentReference="flyIt"/>
+    </component>
+    <component type="com.pblabs.rendering2D.SpriteRenderer" name="Render">
+      <scene componentReference="flyIt"/>
+      <layerIndex>10</layerIndex>
+      <positionProperty>@Spatial.position</positionProperty>
+      <fileName>assets/alien.png</fileName>
+    </component>
+    <component type="com.middlebury.game.HeroControllerComponent" name="Controller">
+    	<positionReference>@Spatial.position</positionReference>
+    </component>
+  </entity>
+  
+  <entity type="com.pblabs.box2D.Box2DSpatialComponent" name="BG">
+    <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
+      <position type="">
+        <x>0</x>
+        <y>0</y>
+      </position>	
+      <size type="">
+        <x>800</x>
+        <y>500</y>
+      </size>
+      <spatialManager componentReference="flyIt"/>
+    </component>
+    <component type="com.pblabs.rendering2D.SpriteRenderer" name="Render">
+      <scene componentReference="flyIt"/>
+      <layerIndex>2</layerIndex>
+      <positionProperty>@Spatial.position</positionProperty>
+      <fileName>assets/bg_space.png</fileName>
+    </component>
+  </entity>
+  	
+  <group name="Level1Data">
+    <objectReference name="Hero"/>
+    <objectReference name="BG"/>
+  </group>
+  
+</things>
