@@ -62,6 +62,9 @@ package
 			// Create a simple background entity
 			createBackground();
 			
+			// Create terrain
+			createTerrain();
+			
 			// initialize score
 			createScore();
 			
@@ -151,6 +154,12 @@ package
 		{
 			PBE.defineEntityByFunction("BG", EntityFactory.CreateBackground);
 			PBE.makeEntity("BG");
+		}
+		
+		private function createTerrain():void
+		{
+			PBE.defineEntityByFunction("Terrain",EntityFactory.CreateTerrain);
+			PBE.makeEntity("Terrain");
 		}
 		
 		private var score:ScoreController;
