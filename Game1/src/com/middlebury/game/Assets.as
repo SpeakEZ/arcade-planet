@@ -7,6 +7,9 @@ package com.middlebury.game
 		[Embed(source="assets/bg_sunset2.jpg")]
 		public var bg:Class;
 		
+		[Embed(source="assets/alien.swf")]
+		public var alien:Class;
+		
 		public function Assets()
 		{
 		}
