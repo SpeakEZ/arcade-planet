@@ -1,17 +1,30 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// 	MIDDLEBURY INTERACTIVE LANGUAGES
+//  Copyright 2011 Middlebury Interactive Languages
+//  All Rights Reserved.
+//
+////////////////////////////////////////////////////////////////////////////////
 package
 {
 	import Lesson5Final.src.HeroControllerComponent;
 	
 	import com.middlebury.game.Assets;
+	import com.middlebury.game.controller.ScoreController;
+	import com.middlebury.game.data.Score;
 	import com.middlebury.game.display.Display;
+	import com.middlebury.game.display.GameScreen;
 	import com.middlebury.game.display.RenderObject;
+	import com.middlebury.game.events.ScoreEvent;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.MovieClipRenderer;
+	import com.pblabs.rendering2D.SimpleShapeRenderer;
 	import com.pblabs.rendering2D.SimpleSpatialComponent;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	import com.pblabs.rendering2D.ui.SceneView;
+	import com.pblabs.screens.ScreenManager;
 	
 	import flash.display.Sprite;
 	import flash.geom.Point;
@@ -47,6 +60,12 @@ package
 			
 			// Create a simple background entity
 			createBackground();
+			
+			// initialize score
+			createScore();
+			
+			ScreenManager.instance.registerScreen("game", new GameScreen(score));
+			ScreenManager.instance.goto("game");
 		}
 		
 		private function createScene():void 
@@ -119,7 +138,7 @@ package
 			var render:RenderObject 
 			= new RenderObject(
 				"Render",  					// Component name
-				"assets/bg_sunset2.jpg", 	// Component asset
+				"assets/bg_space.png", 	// Component asset
 				1,  						// Component layer
 				PBE.scene,					// Component scene
 				"@Spatial.position"			// Component position
@@ -151,8 +170,16 @@ package
 			
 			ent.addComponent(spatial, "Spatial");
 		}
-
-
+		private var score:ScoreController;
+		
+		// Initialize the score controller
+		private function createScore():void
+		{
+			// Setup score controller and default test score
+			var testScore:Score = new Score();
+			testScore.score = 100;
+			this.score = new ScoreController(this,testScore);
+		}
 
 	}
 }
