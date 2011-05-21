@@ -12,6 +12,7 @@ package
 	import com.middlebury.game.HeroControllerComponent;
 	import com.middlebury.game.controller.EntityFactory;
 	import com.middlebury.game.controller.ScoreController;
+	import com.middlebury.game.controller.TerrainController;
 	import com.middlebury.game.data.Score;
 	import com.middlebury.game.display.Display;
 	import com.middlebury.game.display.GameScreen;
@@ -58,18 +59,18 @@ package
 			PBE.registerType(com.pblabs.rendering2D.SpriteRenderer);
 			PBE.registerType(com.pblabs.rendering2D.ui.SceneView);
 			PBE.registerType(com.pblabs.box2D.Box2DSpatialComponent);
+			
 			PBE.registerType(com.middlebury.game.HeroControllerComponent);
+			PBE.registerType(com.middlebury.game.controller.BackgroundController);
+			PBE.registerType(com.middlebury.game.controller.TerrainController);
 			
 			PBE.startup(this);
 			PBE.addResources(new Assets());
 			// setup our scene (defaults to size of stage)
-			PBE.initializeScene(new SceneView(), "flyIt");
+			PBE.initializeScene(new SceneView(), "FlySceneView");
 			
 			// load first leve from xml
 			LevelManager.instance.load("assets/LevelDescriptions.xml", 1);
-			
-			// Create terrain
-			createTerrain();
 			
 			// initialize score
 			createScore();
@@ -79,13 +80,6 @@ package
 			
 			ScreenManager.instance.registerScreen("game", new GameScreen(score));
 			ScreenManager.instance.goto("game");
-		}
-		
-
-		private function createTerrain():void
-		{
-			PBE.defineEntityByFunction("Terrain",EntityFactory.CreateTerrain);
-			PBE.makeEntity("Terrain");
 		}
 		
 		

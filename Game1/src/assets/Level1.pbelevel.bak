@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <things version="1">
 
-    <entity name="SpatialDB">
-		<component type="com.pblabs.rendering2D.BasicSpatialManager2D"
-			name="Manager" />
-	</entity>
+    <!--- ?? -->
+    <entity name="Box2D">
+        <component type="com.pblabs.box2D.Box2DManagerComponent" name="Manager" />
+        <component type="com.pblabs.box2D.Box2DDebugComponent" name="Debug">
+            <Scene componentReference="Scene"/>
+        </component>
+    </entity>
+    <!--- ?? -->
 
     <entity name="Hero">
         <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
@@ -28,7 +32,6 @@
             <positionReference>@Spatial.position</positionReference>
         </component>
     </entity>
-
     <entity name="BG">
         <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
             <position type="">
@@ -41,24 +44,18 @@
             </size>
             <spatialManager componentReference="FlySceneView"/>
         </component>
-        <component type="com.middlebury.game.controller.BackgroundController" name="Controller" >
-            <movement>-.1</movement>
-            <xDrift>0</xDrift>
-        </component>
-
         <component type="com.pblabs.rendering2D.SpriteRenderer" name="Render">
-            <fileName>assets/stars.png</fileName>
             <scene componentReference="FlySceneView"/>
             <layerIndex>10</layerIndex>
             <positionProperty>@Spatial.position</positionProperty>
+            <fileName>assets/colorful-star-field.jpg</fileName>
         </component>
     </entity>
-
     <entity name="Terrain">
         <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
             <position type="">
                 <x>0</x>
-                <y>250</y>
+                <y>100</y>
             </position>
             <size type="">
                 <x>800</x>
@@ -66,21 +63,18 @@
             </size>
             <spatialManager componentReference="FlySceneView"/>
         </component>
-        <component type="com.middlebury.game.controller.TerrainController" name="Controller" >
-            <movement>-.1</movement>
-            <xDriftSpeed>-3</xDriftSpeed>
-            <yDriftSpeed>0</yDriftSpeed>
-            <mouseEffectX>-2</mouseEffectX>
-            <mouseEffectY>-1</mouseEffectY>
+        <component type="com.middlebury.game.controller.TerrainController" name="Controller">
+            <trackingObject componentReference="Hero" componentName="Render"/>
+            <positionRef>@Spatial.position</positionRef>
+            <movement>0.9</movement>
         </component>
         <component type="com.pblabs.rendering2D.SpriteRenderer" name="Render">
-            <fileName>assets/bottom_terrain_long.png</fileName>
             <scene componentReference="FlySceneView"/>
             <layerIndex>15</layerIndex>
             <positionProperty>@Spatial.position</positionProperty>
+            <fileName>assets/bottom_terrain.png</fileName>
         </component>
     </entity>
-
     <group name="Level1Data">
         <objectReference name="Hero"/>
         <objectReference name="BG"/>

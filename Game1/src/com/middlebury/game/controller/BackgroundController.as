@@ -7,11 +7,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 package com.middlebury.game.controller
 {
+	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.components.TickedComponent;
+	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.PropertyReference;
-	import com.pblabs.rendering2D.SpriteRenderer;
 	
 	import flash.geom.Point;
+
 	/**
 	 * <p>Background image controller. onTick updates background.</p>
 	 * @see com.pblabs.engine.components.TickedComponent
@@ -20,27 +22,28 @@ package com.middlebury.game.controller
 	 */	
 	public class BackgroundController extends TickedComponent
 	{
-		public var trackingObject:SpriteRenderer = null;
-		public var positionRef:PropertyReference = null;
-		public var movement:Number = 0.3;
-		
-		public function BackgroundController()
-		{
-			super();
-		}
+		public var pr:PropertyReference = new PropertyReference("@Spatial.position");
+		public var movement:Number;
+		protected var hero:IEntity;
+		protected var position:Point;
+		protected var playerPosition:Point;
+		protected var newPosition:Point;
 		
 		public override function onTick(tickRate:Number):void
 		{
 			super.onTick(tickRate);
+			if(!hero)
+				hero = PBE.lookup("Hero") as IEntity;
 			
-			var playerPosition:Point = trackingObject.renderPosition;
+			// Get references for our spatial position.
+			position = owner.getProperty(pr);
+			playerPosition = hero.getProperty(pr);
 			
 			// Move x as player moves, don't move y?
-			var bgPosition:Point 
-				= new Point((playerPosition.x * -movement), 0);
+			var newPosition:Point = new Point((playerPosition.x * movement), (playerPosition.y * movement));
 			
-			// Set property on owner background
-			owner.setProperty(positionRef, bgPosition);			
+			// Send our manipulated spatial variables back to the spatial manager
+			owner.setProperty(pr, newPosition);
 		}
 	}
 }

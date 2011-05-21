@@ -125,7 +125,6 @@ package com.middlebury.game.controller
 			
 			return entity;
 		}
-		 */		
 		
 		public static function CreateTerrain():IEntity
 		{
@@ -156,5 +155,6 @@ package com.middlebury.game.controller
 			
 			return entity;
 		}
+		 */		
 	}
 }
