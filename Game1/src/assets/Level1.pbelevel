@@ -43,7 +43,6 @@
         </component>
         <component type="com.middlebury.game.controller.BackgroundController" name="Controller" >
             <movement>-.1</movement>
-            <xDrift>0</xDrift>
         </component>
 
         <component type="com.pblabs.rendering2D.SpriteRenderer" name="Render">
@@ -56,18 +55,11 @@
 
     <entity name="Terrain">
         <component type="com.pblabs.rendering2D.SimpleSpatialComponent" name="Spatial">
-            <position type="">
-                <x>0</x>
-                <y>250</y>
-            </position>
-            <size type="">
-                <x>800</x>
-                <y>150</y>
-            </size>
+            <position type=""><x>0</x><y>250</y></position>
+            <size type=""><x>800</x><y>150</y></size>
             <spatialManager componentReference="FlySceneView"/>
         </component>
         <component type="com.middlebury.game.controller.TerrainController" name="Controller" >
-            <movement>-.1</movement>
             <xDriftSpeed>-3</xDriftSpeed>
             <yDriftSpeed>0</yDriftSpeed>
             <mouseEffectX>-2</mouseEffectX>
@@ -81,9 +73,16 @@
         </component>
     </entity>
 
+    <entity name="Questions">
+        <component type="com.middlebury.game.controller.QuestionController" name="Controller">
+            <ticksBetweenQuestions>300</ticksBetweenQuestions>
+        </component>
+    </entity>
+
     <group name="Level1Data">
         <objectReference name="Hero"/>
         <objectReference name="BG"/>
         <objectReference name="Terrain"/>
+        <objectReference name="Questions"/>
     </group>
 </things>

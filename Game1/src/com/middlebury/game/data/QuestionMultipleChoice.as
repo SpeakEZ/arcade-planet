@@ -5,6 +5,7 @@ package com.middlebury.game.data
 		protected var _hasBeenAnswered:Boolean = false;
 		protected var _answers:Array;
 		protected var _prompt:String;
+		
 		/** the index of the correct answer in the answers array */
 		public var correctAnswerIndex:uint;
 		/** the index of the user's submitted answer in the answers array */

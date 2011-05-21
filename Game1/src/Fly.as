@@ -15,15 +15,10 @@ package
 	import com.middlebury.game.controller.ScoreController;
 	import com.middlebury.game.controller.TerrainController;
 	import com.middlebury.game.data.Score;
-	import com.middlebury.game.display.Display;
 	import com.middlebury.game.display.GameScreen;
-	import com.middlebury.game.display.RenderObject;
-	import com.middlebury.game.events.ScoreEvent;
-	import com.pblabs.box2D.Box2DSpatialComponent;
+	import com.middlebury.game.display.QuestionScreen;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.core.LevelManager;
-	import com.pblabs.engine.entity.IEntity;
-	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.MovieClipRenderer;
 	import com.pblabs.rendering2D.SimpleShapeRenderer;
 	import com.pblabs.rendering2D.SpriteRenderer;
@@ -31,7 +26,6 @@ package
 	import com.pblabs.screens.ScreenManager;
 	
 	import flash.display.Sprite;
-	import flash.geom.Point;
 	
 	/**
 	 * @author 		Stephen Felt
@@ -60,11 +54,11 @@ package
 			PBE.registerType(com.pblabs.rendering2D.SimpleSpatialComponent);
 			PBE.registerType(com.pblabs.rendering2D.SpriteRenderer);
 			PBE.registerType(com.pblabs.rendering2D.ui.SceneView);
-			PBE.registerType(com.pblabs.box2D.Box2DSpatialComponent);
 			
 			PBE.registerType(com.middlebury.game.HeroControllerComponent);
 			PBE.registerType(com.middlebury.game.controller.BackgroundController);
 			PBE.registerType(com.middlebury.game.controller.TerrainController);
+			PBE.registerType(com.middlebury.game.controller.QuestionController);
 			
 			PBE.startup(this);
 			PBE.addResources(new Assets());
@@ -83,8 +77,12 @@ package
 			// init question collection
 			createQuestions();
 			
+			// prepare the question screen
+			ScreenManager.instance.registerScreen("question", new QuestionScreen());
+			
 			ScreenManager.instance.registerScreen("game", new GameScreen(score));
 			ScreenManager.instance.goto("game");
+			
 		}
 		
 		
@@ -96,7 +94,6 @@ package
 			   
 			PBE.initializeScene(sceneView);          
 		}
-               
 
 		
 		// Initialize the score controller

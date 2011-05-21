@@ -32,7 +32,7 @@ package com.middlebury.game
             // Get references for our spatial position.
             var position:Point = owner.getProperty(positionReference);
             
-            // Look at our input keys to see which direction we should move. Left is -x, right is +x.
+            // Look at our input keys to see which direction we should move. 
             if (PBE.isKeyDown(InputKey.RIGHT))
                 position.x += 5;
 			else if (PBE.isKeyDown(InputKey.LEFT))

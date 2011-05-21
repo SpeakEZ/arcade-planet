@@ -12,6 +12,11 @@ package com.middlebury.game.data
 		public function QuestionCollection()
 		{
 		}
+		
+		public function get count():int
+		{
+			return _source.length;
+		}
 
 		public function get source():Array
 		{
@@ -47,7 +52,8 @@ package com.middlebury.game.data
 
 			// randomly splice (remove) objects from tempSource and push them into newSource
 			while(tempSource.length > 0)
-				newSource.push(tempSource.splice(Math.round(Math.random() * tempSource.length), 1)[0]);
+				newSource.push(tempSource.splice(
+					Math.floor(Math.random() * tempSource.length), 1)[0]);
 			
 			source = newSource;
 		}
