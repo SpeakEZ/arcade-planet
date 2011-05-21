@@ -2,21 +2,22 @@ package com.middlebury.game.data
 {
 	public class AnswerMultipleChoice implements IAnswer
 	{
+		protected var _prompt:String;
 		
-		protected var _answerPrompt:String;
-		
-		public function AnswerMultipleChoice()
+		public function AnswerMultipleChoice(prompt:String="")
 		{
+			this.prompt = prompt; 
 		}
-		
-		public function get answerPrompt():String
+
+		public function get prompt():String
 		{
-			return null;
+			return _prompt;
 		}
-		
-		public function set answerPrompt()
+
+		public function set prompt(value:String):void
 		{
-			
+			_prompt = value;
 		}
+
 	}
 }

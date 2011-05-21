@@ -11,6 +11,7 @@ package
 	import com.middlebury.game.Assets;
 	import com.middlebury.game.HeroControllerComponent;
 	import com.middlebury.game.controller.EntityFactory;
+	import com.middlebury.game.controller.QuestionController;
 	import com.middlebury.game.controller.ScoreController;
 	import com.middlebury.game.controller.TerrainController;
 	import com.middlebury.game.data.Score;
@@ -41,6 +42,7 @@ package
 	{
 		
 		protected var score:ScoreController;
+		protected var questions:QuestionController;
 
 		public function Fly()
 		{
@@ -78,6 +80,9 @@ package
 			// initialize lives
 			createLives();
 			
+			// init question collection
+			createQuestions();
+			
 			ScreenManager.instance.registerScreen("game", new GameScreen(score));
 			ScreenManager.instance.goto("game");
 		}
@@ -110,6 +115,11 @@ package
 				PBE.defineEntityByFunction("Life"+EntityFactory.lives, EntityFactory.AddLife);
 				PBE.makeEntity("Life"+EntityFactory.lives);
 			}
+		}
+		
+		protected function createQuestions():void
+		{
+			this.questions = new QuestionController();
 		}
 
 	}

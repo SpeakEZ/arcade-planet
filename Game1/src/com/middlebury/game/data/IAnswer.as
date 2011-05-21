@@ -11,7 +11,7 @@ package com.middlebury.game.data
 		/**
 		 * the text to show which represents this answer
 		 */
-		public function get prompt():String;
-		public function set prompt(value:String):void;
+		function get prompt():String;
+		function set prompt(value:String):void;
 	}
 }

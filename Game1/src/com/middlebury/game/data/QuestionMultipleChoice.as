@@ -6,12 +6,13 @@ package com.middlebury.game.data
 		protected var _answers:Array;
 		protected var _prompt:String;
 		/** the index of the correct answer in the answers array */
-		protected var correctAnswerIndex:uint;
+		public var correctAnswerIndex:uint;
 		/** the index of the user's submitted answer in the answers array */
-		protected var userAnswerIndex:uint;
+		public var userAnswerIndex:uint;
 		
-		public function QuestionMultipleChoice()
+		public function QuestionMultipleChoice(prompt:String="")
 		{
+			this.prompt = prompt;
 		}
 		
 		/**
@@ -54,7 +55,7 @@ package com.middlebury.game.data
 			return _prompt;
 		}
 		
-		public function set prompt(value:String)
+		public function set prompt(value:String):void
 		{
 			_prompt = value;
 		}

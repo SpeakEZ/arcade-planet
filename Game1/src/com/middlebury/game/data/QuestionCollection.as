@@ -7,7 +7,7 @@ package com.middlebury.game.data
 	public class QuestionCollection
 	{
 		/** an array of IQuestion objects */
-		protected var _source:Array;
+		protected var _source:Array = [];
 		
 		public function QuestionCollection()
 		{
@@ -31,6 +31,11 @@ package com.middlebury.game.data
 		public function setItemAt(item:Object, index:int):void
 		{
 			_source[index] = item;
+		}
+		
+		public function addItem(item:Object):void
+		{
+			_source.push(item);
 		}
 		
 		public function randomize():void
