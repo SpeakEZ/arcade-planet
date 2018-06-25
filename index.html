@@ -66,23 +66,23 @@
     quarter.y = 80;
     quarter.vx = 0;
     quarter.vy = 0;
-    quarter.width = 30;
-    quarter.height = 50;
+    quarter.width = 15;
+    quarter.height = 25;
 
     app.stage.addChild(quarter);
 
     let texture = TextureCache["images/staff.png"];
-    let rect = new Rectangle(80,50,300,100);
+    let rect = new Rectangle(80,50,320,100);
     texture.frame = rect;
     //staff = new Sprite(resources['images/staff.png'].texture);
     staff = new Sprite(texture);
     staff.anchor.set(0.5);
-    staff.x = 120;
+    staff.x = 140;
     staff.y = 180;
     staff.vx = 0;
     staff.vy = 0;
-    staff.width = 220;
-    staff.height = 100;
+    staff.width = 240;
+    staff.height = 120;
     app.stage.addChild(staff);
 
     introTextStyle = new TextStyle({
