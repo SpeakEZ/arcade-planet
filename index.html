@@ -25,6 +25,8 @@
     Graphics = PIXI.Graphics,
     Text = PIXI.Text,
     TextStyle = PIXI.TextStyle;
+    TextureCache = PIXI.TextureCache;
+    Rectangle = PIXI.Rectangle;
 
   let app = new Application({
     width: 1024,
@@ -40,6 +42,7 @@
   loader
     .add("images/cat.png")
     .add('images/quarter-note.png')
+    .add('images/staff.png')
     .load(setup);
 
   let state, cat, startButton, introText, introTextStyle, outroText, quarter;
@@ -67,6 +70,20 @@
     quarter.height = 50;
 
     app.stage.addChild(quarter);
+
+    let texture = TextureCache["images/staff.png"];
+    let rect = new Rectangle(80,50,300,100);
+    texture.frame = rect;
+    //staff = new Sprite(resources['images/staff.png'].texture);
+    staff = new Sprite(texture);
+    staff.anchor.set(0.5);
+    staff.x = 120;
+    staff.y = 180;
+    staff.vx = 0;
+    staff.vy = 0;
+    staff.width = 220;
+    staff.height = 100;
+    app.stage.addChild(staff);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
