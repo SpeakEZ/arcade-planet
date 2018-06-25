@@ -9,129 +9,206 @@
 
 <body>
 <script type="text/javascript">
-    let type = "WebGL";
-    if(!PIXI.utils.isWebGLSupported()){
-        type = "canvas";
-    }
+  let type = "WebGL";
+  if(!PIXI.utils.isWebGLSupported()){
+    type = "canvas";
+  }
 
-    PIXI.utils.sayHello(type);
+  PIXI.utils.sayHello(type);
 
-    let Application = PIXI.Application,
-        loader = PIXI.loader,
-        resources = PIXI.loader.resources,
-        Sprite = PIXI.Sprite,
-        Graphics = PIXI.Graphics,
-        Text = PIXI.Text,
-        TextStyle = PIXI.TextStyle;
+  let Application = PIXI.Application,
+    loader = PIXI.loader,
+    resources = PIXI.loader.resources,
+    Sprite = PIXI.Sprite,
+    Graphics = PIXI.Graphics,
+    Text = PIXI.Text,
+    TextStyle = PIXI.TextStyle;
 
-    let app = new Application({
-        width: 1024,
-        height: 600, // 768
-        antialias: true,
-        transparent: false,
-        resolution: 1
+  let app = new Application({
+    width: 1024,
+    height: 768,
+    antialias: true,
+    transparent: false,
+    resolution: 1
+  });
+
+  document.body.appendChild(app.view);
+  app.renderer.backgroundColor = 0x99999999;
+
+  loader
+    .add("images/cat.png")
+    .load(setup);
+
+  let state, cat, startButton, introText, introTextStyle, outroText, quarter;
+
+  let musicPlaybackArea, musicPlaybackStartButton;
+  let musicTimer;
+  let song;
+
+  function setup () {
+    cat = new Sprite(resources['images/cat.png'].texture);
+    cat.anchor.set(0.5);
+    cat.x = app.screen.width / 2;
+    cat.y = app.screen.height / 2;
+    cat.vx = 0;
+    cat.vy = 0;
+    app.stage.addChild(cat);
+
+    quarter = new Sprite(resources['images/quarter-note.png'].texture);
+    quarter.anchor.set(0.5);
+    quarter.x = 80;
+    quarter.y = 80;
+    quarter.vx = 0;
+    quarter.vy = 0;
+    quarter.width = 30;
+    quarter.height = 50;
+
+    app.stage.addChild(quarter);
+
+    introTextStyle = new TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 36,
+      fill: 'white',
+      stroke: '#ff3300',
+      strokeThickness: 4,
+      dropShadow: true,
+      dropShadowColor: '#000000',
+      dropShadowBlur: 4,
+      dropShadowAngle: Math.PI / 6,
+      dropShadowDistance: 6
     });
 
-    document.body.appendChild(app.view);
-     app.renderer.backgroundColor = 0x99999999;
+    introText = new Text('Welcome to RhythMathTastic!', introTextStyle);
+    introText.x = 300;
+    introText.y = 30;
+    app.stage.addChild(introText);
 
-    loader
-        .add("images/quarter-note.png")
-        .load(setup);
+    outroText = new Text("Great job, mighty RhythMathTist!");
+    outroText.x = 300;
+    outroText.y = 30;
+    app.stage.addChild(outroText);
+    outroText.visible = false;
 
-    let state, quarter, startButton, introText, introTextStyle, outroText;
+    startButton = new Graphics();
+    startButton.lineStyle(4, 0xFF3300, 1);
+    startButton.beginFill(0x66CCFF);
+    startButton.drawRect(0, 0, 64, 64);
+    startButton.endFill();
+    startButton.x = 500;
+    startButton.y = app.screen.width / 3 * 2;
+    app.stage.addChild(startButton);
 
-    function setup () {
-        quarter = new Sprite(resources['images/quarter-note.png'].texture);
-        quarter.anchor.set(0.5);
-        quarter.x = 80;
-        quarter.y = 80;
-        quarter.vx = 0;
-        quarter.vy = 0;
-        quarter.width = 30;
-        quarter.height = 50;
-    
-        app.stage.addChild(quarter);
+    startButton.interactive = true;
+    startButton.buttonMode = true;
+    startButton.visible = false;
+    startButton.on('click',  () => state = math);
 
-        introTextStyle = new TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fill: 'white',
-            stroke: '#ff3300',
-            strokeThickness: 4,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6
-        });
+    musicPlaybackArea = new Graphics();
+    musicPlaybackArea.lineStyle(4, 0xFF3300, 1);
+    musicPlaybackArea.beginFill(0x000000);
+    musicPlaybackArea.drawRect(0, 0, 800, 100);
+    musicPlaybackArea.endFill();
+    app.stage.addChild(musicPlaybackArea);
+    musicPlaybackArea.x = 150;
+    musicPlaybackArea.y = 600;
+    musicPlaybackArea.visible = false;
 
-        introText = new Text('Beat It', introTextStyle);
-        introText.x = 20;
-        introText.y = 3;
-        app.stage.addChild(introText);
+    musicPlaybackStartButton = new Graphics();
+    musicPlaybackStartButton.lineStyle(4, 0xFF3300, 1);
+    musicPlaybackStartButton.beginFill(0x66CCFF);
+    musicPlaybackStartButton.drawRect(0, 0, 64, 64);
+    musicPlaybackStartButton.endFill();
+    app.stage.addChild(musicPlaybackStartButton);
+    musicPlaybackStartButton.x = 800;
+    musicPlaybackStartButton.y = 400;
+    musicPlaybackStartButton.visible = false;
+    musicPlaybackStartButton.interactive = true;
+    musicPlaybackStartButton.buttonMode = true;
+    musicPlaybackStartButton.on('click', () => state = playingMusic);
 
-        outroText = new Text("Great job, mighty RhythMathTist!");
-        outroText.x = 300;
-        outroText.y = 30;
-        app.stage.addChild(outroText);
-        outroText.visible = false;
+    //state = intro;
+    state = music;
 
-        startButton = new Graphics();
-        startButton.lineStyle(4, 0xFF3300, 1);
-        startButton.beginFill(0x66CCFF);
-        startButton.drawRect(0, 0, 64, 64);
-        startButton.endFill();
-        startButton.x = 500;
-        startButton.y = app.screen.width / 3 * 2;
-        app.stage.addChild(startButton);
+    app.ticker.add(delta => gameLoop(delta));
 
-        startButton.interactive = true;
-        startButton.buttonMode = true;
-        startButton.visible = false;
-        startButton.on('click',  () => state = math);
+  }
 
-        state = intro;
+  function gameLoop (delta) {
+    state(delta);
+  }
 
-        app.ticker.add(delta => gameLoop(delta));
+  function intro (delta) {
+    startButton.visible = true;
+  }
+
+  function math (delta) {
+    introText.visible = false;
+    startButton.visible = false;
+    console.log('hi');
+
+    // Calculate current math problem
+
+    // Display prompt, draggable notes, drop zone
+  }
+
+  function music (delta) {
+
+    // Representation of song?
+    // Array of measures
+    // Each measure is an array of notes, the time values for which sum to 1.
+    class Note {
+      constructor (name, value) {
+        this.name = name;
+        this.value = value;
+      }
+    }
+    let rest = new Note('rest', 1);
+    let whole = new Note('whole', 1);
+    let half = new Note('half', 0.5);
+    let quarter = new Note('quarter', 0.25);
+    let eighth = new Note('eighth', 0.125);
+    let sixteenth = new Note('sixteenth', 0.0625);
+    let measure0 = [rest];
+    let measure1 = [half, quarter, quarter];
+    let measure2 = [eighth, sixteenth, sixteenth, half, quarter];
+    let measure3 = [sixteenth, sixteenth, sixteenth, sixteenth, half, quarter];
+    song = [measure0, measure1, measure2, measure3];
+
+    // Place animated music player person
+
+
+    // Place scrolling music display
+    musicPlaybackArea.visible = true;
+
+
+    // Place start button
+    musicPlaybackStartButton.visible = true;
+    musicTimer = 0;
+
+    // When start button is pressed, begin music play
+
+
+  }
+
+  function playingMusic (delta) {
+    // User taps screen in time with selected notes, accuracy is counted
+
+    // Draw notes on bottom, scrolling towards the left
+    for (let measure of song) {
+      // put notes
+    }
+
+    // Decrease time left on current note
+    song[0][0].value -= 0.005;
+    if (song[0][0].value <= 0) {
 
     }
 
-    function gameLoop (delta) {
-        state(delta);
-    }
+  }
 
-    function intro (delta) {
-        startButton.visible = true;
-    }
-
-    function math (delta) {
-        introText.visible = false;
-        startButton.visible = false;
-        console.log('hi');
-
-        // Calculate current math problem
-
-        // Display prompt, draggable notes, drop zone
-    }
-
-    function music (delta) {
-
-        // Place animated music player person
-
-        // Place scrolling music display
-
-        // Place start button
-
-        // When start button is pressed, begin music play
-
-        // User taps screen in time with selected notes, accuracy is counted
-
-    }
-
-    function outro (delta) {
-        outroText.visible = true;
-    }
+  function outro (delta) {
+    outroText.visible = true;
+  }
 
 
 </script>
