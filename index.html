@@ -7,6 +7,8 @@
 
 <script src="pixi.js"></script>
 
+<script src="node_modules/musquito/dist/musquito-1.0.2.js"></script>
+
 <body>
 <script type="text/javascript">
   let type = "WebGL";
@@ -37,6 +39,7 @@
 
   loader
     .add("images/cat.png")
+    .add('images/quarter-note.png')
     .load(setup);
 
   let state, cat, startButton, introText, introTextStyle, outroText, quarter;
@@ -201,7 +204,15 @@
     // Decrease time left on current note
     song[0][0].value -= 0.005;
     if (song[0][0].value <= 0) {
+      song[0][0].shift();
 
+      // New note! Play a sound
+
+
+      // Next measure
+      if (song[0].length === 0) {
+        song.shift();
+      }
     }
 
   }
