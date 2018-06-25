@@ -33,12 +33,13 @@
   });
 
   document.body.appendChild(app.view);
+  app.renderer.backgroundColor = 0x99999999;
 
   loader
     .add("images/cat.png")
     .load(setup);
 
-  let state, cat, startButton, introText, introTextStyle, outroText;
+  let state, cat, startButton, introText, introTextStyle, outroText, quarter;
 
   let musicPlaybackArea, musicPlaybackStartButton;
   let musicTimer;
@@ -52,6 +53,17 @@
     cat.vx = 0;
     cat.vy = 0;
     app.stage.addChild(cat);
+
+    quarter = new Sprite(resources['images/quarter-note.png'].texture);
+    quarter.anchor.set(0.5);
+    quarter.x = 80;
+    quarter.y = 80;
+    quarter.vx = 0;
+    quarter.vy = 0;
+    quarter.width = 30;
+    quarter.height = 50;
+
+    app.stage.addChild(quarter);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -191,7 +203,7 @@
     if (song[0][0].value <= 0) {
 
     }
-    
+
   }
 
   function outro (delta) {
