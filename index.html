@@ -49,9 +49,14 @@
     .add('images/quarter-note.png')
     .add('images/staff.png')
     .add('images/hack_drum.png')
+    .add('images/introscreen.png')
+    .add('images/hack_ava_intro.png')
+    .add('images/hack_ava_01.png')
+    .add('images/hack_ava_02.png')
     .load(setup);
 
-  let state, cat, startButton, introText, introTextStyle, outroText, quarter;
+  let state, cat, startButton, introText, introPage, introTextStyle, outroText, quarter;
+  let introAvatar, playingAvatarUp, playingAvatarDown;
 
   let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
   let musicTimer;
@@ -59,7 +64,7 @@
   let song;
 
   let noteWindow = 0;
-  let drumSound = new Howl({src: 'Tympani_Bing.mp3'});
+  let drumSound = new Howl({src: 'platesnr.wav'});
 
   function setup () {
     cat = new Sprite(resources['images/cat.png'].texture);
@@ -122,7 +127,7 @@
     introText.y = 3;
     app.stage.addChild(introText);
 
-    outroText = new Text("Great job, mighty RhythMathTist!", introTextStyle);
+    outroText = new Text("Great job! Way to Beat It!", introTextStyle);
     outroText.x = 300;
     outroText.y = 30;
     app.stage.addChild(outroText);
@@ -177,8 +182,31 @@
     playingDrum.visible = false;
     app.stage.addChild(playingDrum);
 
-    //state = intro;
-    state = setupMusic;
+    playingAvatarUp = new Sprite(resources['images/hack_ava_01.png'].texture);
+    playingAvatarDown = new Sprite(resources['images/hack_ava_02.png'].texture);
+    playingAvatarUp.position.set(500, 300);
+    playingAvatarDown.position.set(500, 300);
+    playingAvatarUp.height = playingAvatarDown.height = 300;
+    playingAvatarUp.width = playingAvatarDown.width = 300;
+    app.stage.addChild(playingAvatarUp);
+    app.stage.addChild(playingAvatarDown);
+    playingAvatarUp.visible = playingAvatarDown.visible = false;
+
+    introAvatar = new Sprite(resources['images/hack_ava_intro.png'].texture);
+    introAvatar.position.set(500, 300);
+    introAvatar.height = 200;
+    introAvatar.width = 130;
+    app.stage.addChild(introAvatar);
+    introAvatar.visible = false;
+
+    introPage = new Sprite(resources['images/introscreen.png'].texture);
+    introPage.position.set(0, 0);
+    introPage.width = 1024;
+    introPage.height = 768;
+    app.stage.addChild(introPage);
+
+    state = introTransition;
+    //state = setupMusic;
 
     app.ticker.add(delta => gameLoop(delta));
 
@@ -259,11 +287,25 @@
     t.update();
   }
 
-  function intro (delta) {
+  function introTransition (delta) {
+    introPage.visible = true;
+    introPage.interactive = true;
+    introPage.buttonMode = true;
+    introPage.on('click', () => {
+      introPage.visible = false;
+      state = setupMusic
+    });
+    introText.visible = true;
     startButton.visible = true;
+    state = intro;
+  }
+
+  function intro (delta) {
+
   }
 
   function math (delta) {
+    introPage.visible = false;
     introText.visible = false;
     startButton.visible = false;
     console.log('hi');
@@ -309,6 +351,9 @@
 
   function setupMusic () {
     introText.visible = false;
+    cat.visible = false;
+    introAvatar.visible = true;
+    playingDrum.visible = false;
     // Representation of song?
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
@@ -320,14 +365,22 @@
     song = [measure0, measure1, measure2, measure3];
 
     // Place animated music player person
-    playingDrum.interactive = true;
-    playingDrum.buttonMode = true;
-    playingDrum.on('click', () => {
+    playingAvatarUp.interactive = true;
+    playingAvatarUp.buttonMode = true;
+    playingAvatarUp.on('mousedown', () => {
+      drumSound.play();
+      playingAvatarUp.visible = false;
+      playingAvatarDown.visible = true;
       if (noteWindow > 0) {
-        console.log('hi');
+        goodBeats += 1;
       } else {
-        console.log('bye');
+        badBeats += 1;
       }
+      noteWindow = 0;
+    });
+    playingAvatarUp.on('mouseup', () => {
+      playingAvatarDown.visible = false;
+      playingAvatarUp.visible = true;
     });
 
     // Place scrolling music display
@@ -344,26 +397,19 @@
   function music (delta) {
 
     // When start button is pressed, begin music play
-    playingDrum.visible = true;
+    //playingDrum.visible = true;
 
   }
 
   function playingMusic (delta) {
     musicPlaybackStartButton.visible = false;
+    introAvatar.visible = false;
+    playingAvatarUp.visible = true;
 
     noteWindow -= 1;
 
-    // Around when the user should tap to play a note
-    // app.stage.on('click', () => {
-    // if (noteWindow > 0) {
-    //   console.log('hi');
-    // } else {
-    //   console.log('bye');
-    // } }
-    // );
-
     if (song.length === 0) {
-      state = outro;
+      state = outroTransition;
       return;
     }
     // User taps screen in time with selected notes, accuracy is counted
@@ -373,6 +419,9 @@
       // put notes
       for (let note of measure) {
         note.img.x += note.img.vx;
+        if (note.img.x < 800) {
+          note.img.visible = true;
+        }
       }
     }
 
@@ -386,7 +435,7 @@
       song[0].shift();
 
       // New note! Play a sound
-      drumSound.play();
+      //drumSound.play();
 
       // Next measure
       if (song[0].length === 0) {
@@ -396,11 +445,23 @@
 
   }
 
-  function outro (delta) {
+  function outroTransition (delta) {
     console.log('in outro');
     musicPlaybackArea.visible = false;
     cat.visible = false;
     outroText.visible = true;
+
+
+    let resultText = new Text(`You had ${goodBeats} good beats and ${badBeats} bad beats!`, introTextStyle);
+    resultText.x = 300;
+    resultText.y = 100;
+    app.stage.addChild(resultText);
+
+    state = outro
+  }
+
+  function outro () {
+
   }
 
 
@@ -415,6 +476,7 @@
     note.vy = 0;
     note.width = 30;
     note.height = 50;
+    note.visible = false;
     musicPlaybackArea.addChild(note);
     accumulatedDuration += duration * 100 * 4;
     return note;
