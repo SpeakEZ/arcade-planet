@@ -8,10 +8,12 @@
 <script src="pixi.js"></script>
 <script src="tink.js"></script>
 
-<script src="node_modules/musquito/dist/musquito-1.0.2.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.13/howler.js"></script>
 
 <body>
 <script type="text/javascript">
+
+
   let type = "WebGL";
   if(!PIXI.utils.isWebGLSupported()){
     type = "canvas";
@@ -25,9 +27,10 @@
     Sprite = PIXI.Sprite,
     Graphics = PIXI.Graphics,
     Text = PIXI.Text,
-    TextStyle = PIXI.TextStyle;
-    TextureCache = PIXI.TextureCache;
-    Rectangle = PIXI.Rectangle;
+    TextStyle = PIXI.TextStyle,
+    TextureCache = PIXI.TextureCache,
+    Rectangle = PIXI.Rectangle,
+    Container = PIXI.Container;
 
   let app = new Application({
     width: 1024,
@@ -49,9 +52,11 @@
 
   let state, cat, startButton, introText, introTextStyle, outroText, quarter;
 
-  let musicPlaybackArea, musicPlaybackStartButton;
+  let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
   let musicTimer;
   let song;
+
+  let drumSound = new Howl({src: 'Tympani_Bing.mp3'});
 
   function setup () {
     cat = new Sprite(resources['images/cat.png'].texture);
@@ -113,7 +118,7 @@
     introText.y = 3;
     app.stage.addChild(introText);
 
-    outroText = new Text("Great job, mighty RhythMathTist!");
+    outroText = new Text("Great job, mighty RhythMathTist!", introTextStyle);
     outroText.x = 300;
     outroText.y = 30;
     app.stage.addChild(outroText);
@@ -133,15 +138,20 @@
     startButton.visible = false;
     startButton.on('click',  () => state = math);
 
-    musicPlaybackArea = new Graphics();
-    musicPlaybackArea.lineStyle(4, 0xFF3300, 1);
-    musicPlaybackArea.beginFill(0x000000);
-    musicPlaybackArea.drawRect(0, 0, 800, 100);
-    musicPlaybackArea.endFill();
-    app.stage.addChild(musicPlaybackArea);
-    musicPlaybackArea.x = 150;
-    musicPlaybackArea.y = 600;
+    musicPlaybackArea = new Container();
+    musicPlaybackArea.position.set(150, 600);
     musicPlaybackArea.visible = false;
+    app.stage.addChild(musicPlaybackArea);
+
+    musicPlaybackFrame = new Graphics();
+    musicPlaybackFrame.lineStyle(4, 0xFF3300, 1);
+    musicPlaybackFrame.beginFill(0xFFFFFF);
+    musicPlaybackFrame.drawRect(0, 0, 800, 100);
+    musicPlaybackFrame.endFill();
+    musicPlaybackArea.addChild(musicPlaybackFrame);
+    //musicPlaybackFrame.x = 150;
+    //musicPlaybackFrame.y = 600;
+    //musicPlaybackFrame.visible = false;
 
     musicPlaybackStartButton = new Graphics();
     musicPlaybackStartButton.lineStyle(4, 0xFF3300, 1);
@@ -157,7 +167,7 @@
     musicPlaybackStartButton.on('click', () => state = playingMusic);
 
     //state = intro;
-    state = music;
+    state = setupMusic;
 
     app.ticker.add(delta => gameLoop(delta));
 
@@ -202,27 +212,50 @@
     // Display prompt, draggable notes, drop zone
   }
 
-  function music (delta) {
-
+  function setupMusic () {
+    introText.visible = false;
     // Representation of song?
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
     class Note {
-      constructor (name, value) {
+      constructor (name) {
         this.name = name;
-        this.value = value;
+        switch (name) {
+          case 'rest':
+            this.value = 1;
+            this.duration = 1;
+            break;
+          case 'whole':
+            this.value = 1;
+            this.duration = 1;
+            break;
+          case 'half':
+            this.value = 0.5;
+            this.duration = 0.5;
+            break;
+          case 'quarter':
+            this.value = 0.25;
+            this.duration = 0.25;
+            break;
+          case 'eighth':
+            this.value = 0.125;
+            this.duration = 0.125;
+            break;
+          case 'sixteenth':
+            this.value = 0.0625;
+            this.duration = 0.0625;
+            break;
+          default:
+            console.log('unknown note name', name);
+        }
+        this.img = makeNoteScrolling(this.duration);
       }
     }
-    let rest = new Note('rest', 1);
-    let whole = new Note('whole', 1);
-    let half = new Note('half', 0.5);
-    let quarter = new Note('quarter', 0.25);
-    let eighth = new Note('eighth', 0.125);
-    let sixteenth = new Note('sixteenth', 0.0625);
-    let measure0 = [rest];
-    let measure1 = [half, quarter, quarter];
-    let measure2 = [eighth, sixteenth, sixteenth, half, quarter];
-    let measure3 = [sixteenth, sixteenth, sixteenth, sixteenth, half, quarter];
+
+    let measure0 = [new Note('rest')];
+    let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
+    let measure2 = [new Note('eighth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
+    let measure3 = [new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
     song = [measure0, measure1, measure2, measure3];
 
     // Place animated music player person
@@ -236,26 +269,41 @@
     musicPlaybackStartButton.visible = true;
     musicTimer = 0;
 
+    state = music;
+  }
+
+  function music (delta) {
+
     // When start button is pressed, begin music play
 
 
   }
 
   function playingMusic (delta) {
+    musicPlaybackStartButton.visible = false;
+
+    if (song.length === 0) {
+      state = outro;
+      return;
+    }
     // User taps screen in time with selected notes, accuracy is counted
 
     // Draw notes on bottom, scrolling towards the left
     for (let measure of song) {
       // put notes
+      for (let note of measure) {
+        note.img.x += note.img.vx;
+      }
     }
-
     // Decrease time left on current note
-    song[0][0].value -= 0.005;
-    if (song[0][0].value <= 0) {
-      song[0][0].shift();
+    song[0][0].duration -= 0.005;
+    if (song[0][0].duration <= 0) {
+      song[0][0].img.visible = false;
+      console.log('playing note', song[0][0].name);
+      song[0].shift();
 
       // New note! Play a sound
-
+      drumSound.play();
 
       // Next measure
       if (song[0].length === 0) {
@@ -266,9 +314,27 @@
   }
 
   function outro (delta) {
+    console.log('in outro');
+    musicPlaybackArea.visible = false;
+    cat.visible = false;
     outroText.visible = true;
   }
 
+
+  let accumulatedDuration = 800;
+  function makeNoteScrolling(duration) {
+    let note = new Sprite(resources['images/quarter-note.png'].texture);
+    note.anchor.set(0.5);
+    note.x = accumulatedDuration;
+    note.y = 50;
+    note.vx = -1;
+    note.vy = 0;
+    note.width = 30;
+    note.height = 50;
+    musicPlaybackArea.addChild(note);
+    accumulatedDuration += duration * 60;
+    return note;
+  }
 
 </script>
 </body>
