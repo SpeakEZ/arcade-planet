@@ -105,8 +105,9 @@
         // rect intersection - todo need to loop thru all measures
         if (hitTestRectangle(quarterDragSprite, staff)) {
           console.log("hit staff");
-          quarterDrop = makeNote("quarter",80,150);
-          //note = new Note('')
+          x = 73 + measure0.length * 15;
+          quarterDrop = makeNote("quarter",x,150);
+          measure0.push(quarterDrop);
         }
         quarterDragSprite.visible = false; // always hide it
       };
@@ -284,7 +285,7 @@
   class Note {
     constructor (name,drag=false,x=80,y=40) {
       this.name = name;
-      if (drag) {
+      if (drag) { // this could be a subclass really DragNote
         this.dragSprite = new Sprite(resources['images/' + name + '-note.png'].texture);
         this.dragSprite.x = x;
         this.dragSprite.y = y;
@@ -295,8 +296,6 @@
         t.makeInteractive(this.dragSprite);
 
         app.stage.addChild(this.dragSprite);
-
-        //t.makeDraggable(note);
         t.makeInteractive(this.dragSprite);
       }
       switch (name) {
