@@ -47,6 +47,7 @@
   loader
     .add("images/cat.png")
     .add('images/quarter-note.png')
+    .add('images/eighth-note.png')
     .add('images/staff.png')
     .add('images/hack_drum.png')
     .add('images/introscreen.png')
@@ -98,6 +99,7 @@
 
 
     quarter = setupNote("quarter");
+    eighth = setupNote("eighth",60);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -200,10 +202,10 @@
   }
 
   function setupNote(noteType, x=80, y=40) {
-    note = makeNote(noteType);
+    note = makeNote(noteType,x,y);
     noteSprite = note.dragSprite;
     noteSprite.press = () => {
-      noteDrag = makeNote(noteType);
+      noteDrag = makeNote(noteType,x);
       noteDrag.makeDraggable();
       noteDragSprite = noteDrag.dragSprite
       noteDragSprite.release = () => {
@@ -211,8 +213,8 @@
         // rect intersection - todo need to loop thru all measures
         if (hitTestRectangle(noteDragSprite, staff)) {
           console.log("hit staff");
-          x = 73 + measure0.length * 15;
-          noteDrop = makeNote(noteType,x,150);
+          xDrop = 73 + measure0.length * 15;
+          noteDrop = makeNote(noteType,xDrop,150);
           measure0.push(noteDrop);
         }
         noteDragSprite.visible = false; // hide the dragger
