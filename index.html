@@ -262,46 +262,46 @@
 
     // Display prompt, draggable notes, drop zone
   }
+  class Note {
+    constructor (name) {
+      this.name = name;
+      switch (name) {
+        case 'rest':
+          this.value = 1;
+          this.duration = 1;
+          break;
+        case 'whole':
+          this.value = 1;
+          this.duration = 1;
+          break;
+        case 'half':
+          this.value = 0.5;
+          this.duration = 0.5;
+          break;
+        case 'quarter':
+          this.value = 0.25;
+          this.duration = 0.25;
+          break;
+        case 'eighth':
+          this.value = 0.125;
+          this.duration = 0.125;
+          break;
+        case 'sixteenth':
+          this.value = 0.0625;
+          this.duration = 0.0625;
+          break;
+        default:
+          console.log('unknown note name', name);
+      }
+      this.img = makeNoteScrolling(this.duration);
+    }
+  }
 
   function setupMusic () {
     introText.visible = false;
     // Representation of song?
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
-    class Note {
-      constructor (name) {
-        this.name = name;
-        switch (name) {
-          case 'rest':
-            this.value = 1;
-            this.duration = 1;
-            break;
-          case 'whole':
-            this.value = 1;
-            this.duration = 1;
-            break;
-          case 'half':
-            this.value = 0.5;
-            this.duration = 0.5;
-            break;
-          case 'quarter':
-            this.value = 0.25;
-            this.duration = 0.25;
-            break;
-          case 'eighth':
-            this.value = 0.125;
-            this.duration = 0.125;
-            break;
-          case 'sixteenth':
-            this.value = 0.0625;
-            this.duration = 0.0625;
-            break;
-          default:
-            console.log('unknown note name', name);
-        }
-        this.img = makeNoteScrolling(this.duration);
-      }
-    }
 
     let measure0 = [new Note('rest')];
     let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
