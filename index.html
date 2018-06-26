@@ -58,6 +58,8 @@
 
   let drumSound = new Howl({src: 'Tympani_Bing.mp3'});
 
+  let measure0 = [];
+
   function setup () {
     cat = new Sprite(resources['images/cat.png'].texture);
     cat.anchor.set(0.5);
@@ -92,7 +94,7 @@
         if (hitTestRectangle(quarterDrag, staff)) {
           console.log("hit staff");
           quarterDrop = makeNote("quarter",80,150);
-
+          note = new Note('')
         }
         quarterDrag.visible = false; // always hide it
       };
