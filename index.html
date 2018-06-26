@@ -67,7 +67,9 @@
   let noteWindow = 0;
   let drumSound = new Howl({src: 'platesnr.wav'});
 
-  let measure0 = [];
+  //let measure0 = [];
+  let measure0; // = new Measure();
+  let measure1 = [];
 
   function setup () {
     musicPlaybackArea = new Container();
@@ -83,19 +85,7 @@
     cat.vy = 0;
     app.stage.addChild(cat);
 
-    let texture = TextureCache["images/staff.png"];
-    let rect = new Rectangle(80,50,320,100);
-    texture.frame = rect;
-    //staff = new Sprite(resources['images/staff.png'].texture);
-    staff = new Sprite(texture);
-    //staff.anchor.set(0.5);
-    staff.x = 10;
-    staff.y = 100;
-    staff.vx = 0;
-    staff.vy = 0;
-    staff.width = 240;
-    staff.height = 120;
-    app.stage.addChild(staff);
+    measure0 = new Measure();
 
 
     quarter = setupNote("quarter");
@@ -201,6 +191,29 @@
 
   }
 
+  class Measure {
+
+    constructor() {
+      this.notes = [];
+      let texture = TextureCache["images/staff.png"];
+      let rect = new Rectangle(80,50,320,100);
+      texture.frame = rect;
+      this.sprite = new Sprite(texture);
+      this.sprite.x = 10;
+      this.sprite.y = 100;
+      this.sprite.vx = 0;
+      this.sprite.vy = 0;
+      this.sprite.width = 240;
+      this.sprite.height = 120;
+      app.stage.addChild(this.sprite);
+    }
+    addNote(noteType) {
+      let xDrop = 73 + this.notes.length * 15;
+      note = makeNote(noteType,xDrop,150);
+      this.notes.push(note);
+    }
+  }
+
   function checkMeasures() {
     let sum = 0.0;
     measure0.forEach((note) => sum += note.value )
@@ -225,11 +238,12 @@
       noteDragSprite.release = () => {
         console.log("release of drag")
         // rect intersection - todo need to loop thru all measures
-        if (hitTestRectangle(noteDragSprite, staff)) {
+        if (hitTestRectangle(noteDragSprite, measure0.sprite)) {
           console.log("hit staff");
-          xDrop = 73 + measure0.length * 15;
-          noteDrop = makeNote(noteType,xDrop,150);
-          measure0.push(noteDrop);
+          //xDrop = 73 + measure0.length * 15;
+          //noteDrop = makeNote(noteType,xDrop,150);
+          //measure0.push(noteDrop);
+          measure0.addNote(noteType);
         }
         //
         noteDragSprite.visible = false; // hide the dragger
@@ -392,7 +406,7 @@
     // Each measure is an array of notes, the time values for which sum to 1.
 
     //let measure0 = [new Note('rest')]; - defined by dragging now!
-    let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
+    //let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
     let measure2 = [new Note('eighth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
     let measure3 = [new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
     song = [measure0, measure1, measure2, measure3];
