@@ -6,6 +6,7 @@
 </head>
 
 <script src="pixi.js"></script>
+<script src="tink.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.13/howler.js"></script>
 
@@ -27,6 +28,8 @@
     Graphics = PIXI.Graphics,
     Text = PIXI.Text,
     TextStyle = PIXI.TextStyle,
+    TextureCache = PIXI.TextureCache,
+    Rectangle = PIXI.Rectangle,
     Container = PIXI.Container;
 
   let app = new Application({
@@ -39,10 +42,12 @@
 
   document.body.appendChild(app.view);
   app.renderer.backgroundColor = 0x99999999;
+  let t = new Tink(PIXI, app.renderer.view);
 
   loader
     .add("images/cat.png")
     .add('images/quarter-note.png')
+    .add('images/staff.png')
     .load(setup);
 
   let state, cat, startButton, introText, introTextStyle, outroText, quarter;
@@ -62,16 +67,32 @@
     cat.vy = 0;
     app.stage.addChild(cat);
 
-    quarter = new Sprite(resources['images/quarter-note.png'].texture);
-    quarter.anchor.set(0.5);
-    quarter.x = 80;
-    quarter.y = 80;
-    quarter.vx = 0;
-    quarter.vy = 0;
-    quarter.width = 30;
-    quarter.height = 50;
+    quarter = makeNote("quarter");
+    quarter.press = () => {
+      quarterDrag = makeNote("quarter");
+      t.makeDraggable(quarterDrag);
 
-    app.stage.addChild(quarter);
+      quarterDrag.release = () => {
+        //Do something when the pointer is released after pressing the sprite
+        console.log("dropped");
+      };
+
+    };
+
+
+    let texture = TextureCache["images/staff.png"];
+    let rect = new Rectangle(80,50,320,100);
+    texture.frame = rect;
+    //staff = new Sprite(resources['images/staff.png'].texture);
+    staff = new Sprite(texture);
+    staff.anchor.set(0.5);
+    staff.x = 140;
+    staff.y = 180;
+    staff.vx = 0;
+    staff.vy = 0;
+    staff.width = 240;
+    staff.height = 120;
+    app.stage.addChild(staff);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -86,9 +107,9 @@
       dropShadowDistance: 6
     });
 
-    introText = new Text('Welcome to RhythMathTastic!', introTextStyle);
-    introText.x = 300;
-    introText.y = 30;
+    introText = new Text('Beat It', introTextStyle);
+    introText.x = 20;
+    introText.y = 3;
     app.stage.addChild(introText);
 
     outroText = new Text("Great job, mighty RhythMathTist!", introTextStyle);
@@ -146,8 +167,29 @@
 
   }
 
+  function makeNote(noteType) {
+    note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
+    note.anchor.set(0.5);
+    note.x = 80;
+    note.y = 80;
+    note.vx = 0;
+    note.vy = 0;
+    note.width = 15;
+    note.height = 25;
+
+    app.stage.addChild(note);
+
+    //t.makeDraggable(note);
+    t.makeInteractive(note);
+    return note;
+  }
+
+
+  // make it interactie!  t.makeInteractive(anySprite); anySprite.press
+
   function gameLoop (delta) {
     state(delta);
+    t.update();
   }
 
   function intro (delta) {
@@ -200,7 +242,7 @@
           default:
             console.log('unknown note name', name);
         }
-        this.img = makeNote(this.duration);
+        this.img = makeNoteBottom(this.duration);
       }
     }
 
@@ -273,7 +315,7 @@
 
 
   let accumulatedDuration = 800;
-  function makeNote(duration) {
+  function makeNoteScrolling(duration) {
     let note = new Sprite(resources['images/quarter-note.png'].texture);
     note.anchor.set(0.5);
     note.x = accumulatedDuration;
