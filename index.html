@@ -62,18 +62,18 @@
     cat.vy = 0;
     app.stage.addChild(cat);
 
-    quarter = new Sprite(resources['images/quarter-note.png'].texture);
-    quarter.anchor.set(0.5);
-    quarter.x = 80;
-    quarter.y = 80;
-    quarter.vx = 0;
-    quarter.vy = 0;
-    quarter.width = 15;
-    quarter.height = 25;
+    quarter = makeNote("quarter");
+    quarter.press = () => {
+      quarterDrag = makeNote("quarter");
+      t.makeDraggable(quarterDrag);
 
-    app.stage.addChild(quarter);
+      quarterDrag.release = () => {
+        //Do something when the pointer is released after pressing the sprite
+        console.log("dropped");
+      };
 
-    t.makeDraggable(quarter);
+    };
+
 
     let texture = TextureCache["images/staff.png"];
     let rect = new Rectangle(80,50,320,100);
@@ -156,6 +156,26 @@
     app.ticker.add(delta => gameLoop(delta));
 
   }
+
+  function makeNote(noteType) {
+    note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
+    note.anchor.set(0.5);
+    note.x = 80;
+    note.y = 80;
+    note.vx = 0;
+    note.vy = 0;
+    note.width = 15;
+    note.height = 25;
+
+    app.stage.addChild(note);
+
+    //t.makeDraggable(note);
+    t.makeInteractive(note);
+    return note;
+  }
+
+
+  // make it interactie!  t.makeInteractive(anySprite); anySprite.press
 
   function gameLoop (delta) {
     state(delta);
