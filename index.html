@@ -70,38 +70,39 @@
     cat.vy = 0;
     app.stage.addChild(cat);
 
+    let texture = TextureCache["images/staff.png"];
+    let rect = new Rectangle(80,50,320,100);
+    texture.frame = rect;
+    //staff = new Sprite(resources['images/staff.png'].texture);
+    staff = new Sprite(texture);
+    //staff.anchor.set(0.5);
+    staff.x = 10;
+    staff.y = 100;
+    staff.vx = 0;
+    staff.vy = 0;
+    staff.width = 240;
+    staff.height = 120;
+    app.stage.addChild(staff);
+
+
     quarter = makeNote("quarter");
     quarter.press = () => {
       quarterDrag = makeNote("quarter");
       t.makeDraggable(quarterDrag);
 
       quarterDrag.release = () => {
-        // rect intersection - todo need to loop thru all measure
-        if (false) { //hitTestRectangle(quarterDrag, )) {
+        // rect intersection - todo need to loop thru all measures
+        if (hitTestRectangle(quarterDrag, staff)) {
+          console.log("hit staff");
+          quarterDrop = makeNote("quarter",80,150);
 
         }
-        // no intersection - hide
-        else {
-          quarterDrag.visible = false; // or app.stage.removeChild
-        }
+        quarterDrag.visible = false; // always hide it
       };
 
     };
 
 
-    let texture = TextureCache["images/staff.png"];
-    let rect = new Rectangle(80,50,320,100);
-    texture.frame = rect;
-    //staff = new Sprite(resources['images/staff.png'].texture);
-    staff = new Sprite(texture);
-    staff.anchor.set(0.5);
-    staff.x = 140;
-    staff.y = 180;
-    staff.vx = 0;
-    staff.vy = 0;
-    staff.width = 240;
-    staff.height = 120;
-    app.stage.addChild(staff);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -183,11 +184,11 @@
 
   }
 
-  function makeNote(noteType) {
+  function makeNote(noteType, x=80, y=80) {
     let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
     note.anchor.set(0.5);
-    note.x = 80;
-    note.y = 80;
+    note.x = x;
+    note.y = y;
     note.vx = 0;
     note.vy = 0;
     note.width = 15;
@@ -200,6 +201,56 @@
     return note;
   }
 
+  function hitTestRectangle(r1, r2) {
+
+    //Define the variables we'll need to calculate
+    let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+    //hit will determine whether there's a collision
+    hit = false;
+
+    //Find the center points of each sprite
+    r1.centerX = r1.x + r1.width / 2;
+    r1.centerY = r1.y + r1.height / 2;
+    r2.centerX = r2.x + r2.width / 2;
+    r2.centerY = r2.y + r2.height / 2;
+
+    //Find the half-widths and half-heights of each sprite
+    r1.halfWidth = r1.width / 2;
+    r1.halfHeight = r1.height / 2;
+    r2.halfWidth = r2.width / 2;
+    r2.halfHeight = r2.height / 2;
+
+    //Calculate the distance vector between the sprites
+    vx = r1.centerX - r2.centerX;
+    vy = r1.centerY - r2.centerY;
+
+    //Figure out the combined half-widths and half-heights
+    combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+    combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+    //Check for a collision on the x axis
+    if (Math.abs(vx) < combinedHalfWidths) {
+
+      //A collision might be occuring. Check for a collision on the y axis
+      if (Math.abs(vy) < combinedHalfHeights) {
+
+        //There's definitely a collision happening
+        hit = true;
+      } else {
+
+        //There's no collision on the y axis
+        hit = false;
+      }
+    } else {
+
+      //There's no collision on the x axis
+      hit = false;
+    }
+
+    //`hit` will be either `true` or `false`
+    return hit;
+  };
 
   // make it interactie!  t.makeInteractive(anySprite); anySprite.press
 
@@ -221,46 +272,46 @@
 
     // Display prompt, draggable notes, drop zone
   }
+  class Note {
+    constructor (name) {
+      this.name = name;
+      switch (name) {
+        case 'rest':
+          this.value = 1;
+          this.duration = 1;
+          break;
+        case 'whole':
+          this.value = 1;
+          this.duration = 1;
+          break;
+        case 'half':
+          this.value = 0.5;
+          this.duration = 0.5;
+          break;
+        case 'quarter':
+          this.value = 0.25;
+          this.duration = 0.25;
+          break;
+        case 'eighth':
+          this.value = 0.125;
+          this.duration = 0.125;
+          break;
+        case 'sixteenth':
+          this.value = 0.0625;
+          this.duration = 0.0625;
+          break;
+        default:
+          console.log('unknown note name', name);
+      }
+      this.img = makeNoteScrolling(this.duration);
+    }
+  }
 
   function setupMusic () {
     introText.visible = false;
     // Representation of song?
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
-    class Note {
-      constructor (name) {
-        this.name = name;
-        switch (name) {
-          case 'rest':
-            this.value = 1;
-            this.duration = 1;
-            break;
-          case 'whole':
-            this.value = 1;
-            this.duration = 1;
-            break;
-          case 'half':
-            this.value = 0.5;
-            this.duration = 0.5;
-            break;
-          case 'quarter':
-            this.value = 0.25;
-            this.duration = 0.25;
-            break;
-          case 'eighth':
-            this.value = 0.125;
-            this.duration = 0.125;
-            break;
-          case 'sixteenth':
-            this.value = 0.0625;
-            this.duration = 0.0625;
-            break;
-          default:
-            console.log('unknown note name', name);
-        }
-        this.img = makeNoteScrolling(this.duration);
-      }
-    }
 
     let measure0 = [new Note('rest')];
     let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
