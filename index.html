@@ -48,14 +48,17 @@
     .add("images/cat.png")
     .add('images/quarter-note.png')
     .add('images/staff.png')
+    .add('images/hack_drum.png')
     .load(setup);
 
   let state, cat, startButton, introText, introTextStyle, outroText, quarter;
 
   let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
   let musicTimer;
+  let playingDrum, goodBeats = 0, badBeats = 0;
   let song;
 
+  let noteWindow = 0;
   let drumSound = new Howl({src: 'Tympani_Bing.mp3'});
 
   function setup () {
@@ -166,6 +169,13 @@
     musicPlaybackStartButton.buttonMode = true;
     musicPlaybackStartButton.on('click', () => state = playingMusic);
 
+    playingDrum = new Sprite(resources['images/hack_drum.png'].texture);
+    playingDrum.position.set(500, 400);
+    playingDrum.width = 100;
+    playingDrum.height = 100;
+    playingDrum.visible = false;
+    app.stage.addChild(playingDrum);
+
     //state = intro;
     state = setupMusic;
 
@@ -174,7 +184,7 @@
   }
 
   function makeNote(noteType) {
-    note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
+    let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
     note.anchor.set(0.5);
     note.x = 80;
     note.y = 80;
@@ -259,7 +269,15 @@
     song = [measure0, measure1, measure2, measure3];
 
     // Place animated music player person
-
+    playingDrum.interactive = true;
+    playingDrum.buttonMode = true;
+    playingDrum.on('click', () => {
+      if (noteWindow > 0) {
+        console.log('hi');
+      } else {
+        console.log('bye');
+      }
+    });
 
     // Place scrolling music display
     musicPlaybackArea.visible = true;
@@ -275,12 +293,23 @@
   function music (delta) {
 
     // When start button is pressed, begin music play
-
+    playingDrum.visible = true;
 
   }
 
   function playingMusic (delta) {
     musicPlaybackStartButton.visible = false;
+
+    noteWindow -= 1;
+
+    // Around when the user should tap to play a note
+    // app.stage.on('click', () => {
+    // if (noteWindow > 0) {
+    //   console.log('hi');
+    // } else {
+    //   console.log('bye');
+    // } }
+    // );
 
     if (song.length === 0) {
       state = outro;
@@ -295,9 +324,12 @@
         note.img.x += note.img.vx;
       }
     }
-    // Decrease time left on current note
-    song[0][0].duration -= 0.005;
-    if (song[0][0].duration <= 0) {
+
+    if (song[0][0].img.x <= 50) {
+      noteWindow = 20;
+    }
+
+    if (song[0][0].img.x <= 0) {
       song[0][0].img.visible = false;
       console.log('playing note', song[0][0].name);
       song[0].shift();
@@ -322,17 +354,18 @@
 
 
   let accumulatedDuration = 800;
+
   function makeNoteScrolling(duration) {
     let note = new Sprite(resources['images/quarter-note.png'].texture);
     note.anchor.set(0.5);
     note.x = accumulatedDuration;
     note.y = 50;
-    note.vx = -1;
+    note.vx = -3;
     note.vy = 0;
     note.width = 30;
     note.height = 50;
     musicPlaybackArea.addChild(note);
-    accumulatedDuration += duration * 60;
+    accumulatedDuration += duration * 100 * 4;
     return note;
   }
 
