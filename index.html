@@ -64,6 +64,11 @@
   let measure0 = [];
 
   function setup () {
+    musicPlaybackArea = new Container();
+    musicPlaybackArea.position.set(150, 600);
+    musicPlaybackArea.visible = false;
+    app.stage.addChild(musicPlaybackArea);
+
     cat = new Sprite(resources['images/cat.png'].texture);
     cat.anchor.set(0.5);
     cat.x = app.screen.width / 2;
@@ -87,17 +92,20 @@
     app.stage.addChild(staff);
 
 
-    quarter = makeNote("quarter");
-    quarter.press = () => {
-      quarterDrag = makeNote("quarter");
-      t.makeDraggable(quarterDrag);
+    quarter = makeNote("quarter",true);
+    quarterSprite = quarter.dragSprite;
+    quarterSprite.press = () => {
+      quarterDrag = makeNote("quarter",true);
+      quarterDrag.makeDraggable();
+      //t.makeDraggable(quarterDrag);
 
-      quarterDrag.release = () => {
+
+      quarterDrag.dragSprite.release = () => {
         // rect intersection - todo need to loop thru all measures
         if (hitTestRectangle(quarterDrag, staff)) {
           console.log("hit staff");
-          quarterDrop = makeNote("quarter",80,150);
-          note = new Note('')
+          quarterDrop = makeNote("quarter",true,80,150);
+          //note = new Note('')
         }
         quarterDrag.visible = false; // always hide it
       };
@@ -144,10 +152,7 @@
     startButton.visible = false;
     startButton.on('click',  () => state = math);
 
-    musicPlaybackArea = new Container();
-    musicPlaybackArea.position.set(150, 600);
-    musicPlaybackArea.visible = false;
-    app.stage.addChild(musicPlaybackArea);
+
 
     musicPlaybackFrame = new Graphics();
     musicPlaybackFrame.lineStyle(4, 0xFF3300, 1);
@@ -187,20 +192,21 @@
   }
 
   function makeNote(noteType, x=80, y=80) {
-    let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
-    note.anchor.set(0.5);
-    note.x = x;
-    note.y = y;
-    note.vx = 0;
-    note.vy = 0;
-    note.width = 15;
-    note.height = 25;
-
-    app.stage.addChild(note);
-
-    //t.makeDraggable(note);
-    t.makeInteractive(note);
-    return note;
+    return new Note(noteType,x,y);
+    // let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
+    // //note.anchor.set(0.5);
+    // note.x = x;
+    // note.y = y;
+    // note.vx = 0;
+    // note.vy = 0;
+    // note.width = 15;
+    // note.height = 25;
+    //
+    // app.stage.addChild(note);
+    //
+    // //t.makeDraggable(note);
+    // t.makeInteractive(note);
+    // return note;
   }
 
   function hitTestRectangle(r1, r2) {
@@ -275,8 +281,23 @@
     // Display prompt, draggable notes, drop zone
   }
   class Note {
-    constructor (name) {
+    constructor (name,drag=false,x=80,y=80) {
       this.name = name;
+      if (drag) {
+        this.dragSprite = new Sprite(resources['images/' + name + '-note.png'].texture);
+        this.dragSprite.x = x;
+        this.dragSprite.y = y;
+        this.dragSprite.vx = 0;
+        this.dragSprite.vy = 0;
+        this.dragSprite.width = 15;
+        this.dragSprite.height = 25;
+        t.makeInteractive(this.dragSprite);
+
+        app.stage.addChild(this.dragSprite);
+
+        //t.makeDraggable(note);
+        t.makeInteractive(this.dragSprite);
+      }
       switch (name) {
         case 'rest':
           this.value = 1;
@@ -306,6 +327,10 @@
           console.log('unknown note name', name);
       }
       this.img = makeNoteScrolling(this.duration);
+    }
+
+    makeDraggable() {
+      t.makeDraggable(this.dragSprite);
     }
   }
 
