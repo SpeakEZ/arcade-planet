@@ -7,10 +7,12 @@
 
 <script src="pixi.js"></script>
 
-<script src="node_modules/musquito/dist/musquito-1.0.2.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.13/howler.js"></script>
 
 <body>
 <script type="text/javascript">
+
+
   let type = "WebGL";
   if(!PIXI.utils.isWebGLSupported()){
     type = "canvas";
@@ -204,7 +206,7 @@
     // Decrease time left on current note
     song[0][0].value -= 0.005;
     if (song[0][0].value <= 0) {
-      song[0][0].shift();
+      song[0].shift();
 
       // New note! Play a sound
 
