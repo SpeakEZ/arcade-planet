@@ -66,7 +66,14 @@
   let noteWindow = 0;
   let drumSound = new Howl({src: 'platesnr.wav'});
 
+  let measure0 = [];
+
   function setup () {
+    musicPlaybackArea = new Container();
+    musicPlaybackArea.position.set(150, 600);
+    musicPlaybackArea.visible = false;
+    app.stage.addChild(musicPlaybackArea);
+
     cat = new Sprite(resources['images/cat.png'].texture);
     cat.anchor.set(0.5);
     cat.x = app.screen.width / 2;
@@ -91,18 +98,23 @@
 
 
     quarter = makeNote("quarter");
-    quarter.press = () => {
+    quarterSprite = quarter.dragSprite;
+    quarterSprite.press = () => {
       quarterDrag = makeNote("quarter");
-      t.makeDraggable(quarterDrag);
+      quarterDrag.makeDraggable();
+      //t.makeDraggable(quarterDrag);
 
-      quarterDrag.release = () => {
+      quarterDragSprite = quarterDrag.dragSprite
+      quarterDragSprite.release = () => {
+        console.log("release of drag")
         // rect intersection - todo need to loop thru all measures
-        if (hitTestRectangle(quarterDrag, staff)) {
+        if (hitTestRectangle(quarterDragSprite, staff)) {
           console.log("hit staff");
-          quarterDrop = makeNote("quarter",80,150);
-
+          x = 73 + measure0.length * 15;
+          quarterDrop = makeNote("quarter",x,150);
+          measure0.push(quarterDrop);
         }
-        quarterDrag.visible = false; // always hide it
+        quarterDragSprite.visible = false; // always hide it
       };
 
     };
@@ -147,10 +159,7 @@
     startButton.visible = false;
     startButton.on('click',  () => state = math);
 
-    musicPlaybackArea = new Container();
-    musicPlaybackArea.position.set(150, 600);
-    musicPlaybackArea.visible = false;
-    app.stage.addChild(musicPlaybackArea);
+
 
     musicPlaybackFrame = new Graphics();
     musicPlaybackFrame.lineStyle(4, 0xFF3300, 1);
@@ -212,21 +221,22 @@
 
   }
 
-  function makeNote(noteType, x=80, y=80) {
-    let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
-    note.anchor.set(0.5);
-    note.x = x;
-    note.y = y;
-    note.vx = 0;
-    note.vy = 0;
-    note.width = 15;
-    note.height = 25;
-
-    app.stage.addChild(note);
-
-    //t.makeDraggable(note);
-    t.makeInteractive(note);
-    return note;
+  function makeNote(noteType, x=80, y=40) {
+    return new Note(noteType,true,x,y);
+    // let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
+    // //note.anchor.set(0.5);
+    // note.x = x;
+    // note.y = y;
+    // note.vx = 0;
+    // note.vy = 0;
+    // note.width = 15;
+    // note.height = 25;
+    //
+    // app.stage.addChild(note);
+    //
+    // //t.makeDraggable(note);
+    // t.makeInteractive(note);
+    // return note;
   }
 
   function hitTestRectangle(r1, r2) {
@@ -315,8 +325,21 @@
     // Display prompt, draggable notes, drop zone
   }
   class Note {
-    constructor (name) {
+    constructor (name,drag=false,x=80,y=40) {
       this.name = name;
+      if (drag) { // this could be a subclass really DragNote
+        this.dragSprite = new Sprite(resources['images/' + name + '-note.png'].texture);
+        this.dragSprite.x = x;
+        this.dragSprite.y = y;
+        this.dragSprite.vx = 0;
+        this.dragSprite.vy = 0;
+        this.dragSprite.width = 15;
+        this.dragSprite.height = 25;
+        t.makeInteractive(this.dragSprite);
+
+        app.stage.addChild(this.dragSprite);
+        t.makeInteractive(this.dragSprite);
+      }
       switch (name) {
         case 'rest':
           this.value = 1;
@@ -347,6 +370,10 @@
       }
       this.img = makeNoteScrolling(this.duration);
     }
+
+    makeDraggable() {
+      t.makeDraggable(this.dragSprite);
+    }
   }
 
   function setupMusic () {
@@ -358,7 +385,7 @@
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
 
-    let measure0 = [new Note('rest')];
+    //let measure0 = [new Note('rest')]; - defined by dragging now!
     let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
     let measure2 = [new Note('eighth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
     let measure3 = [new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
