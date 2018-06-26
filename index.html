@@ -92,22 +92,23 @@
     app.stage.addChild(staff);
 
 
-    quarter = makeNote("quarter",true);
+    quarter = makeNote("quarter");
     quarterSprite = quarter.dragSprite;
     quarterSprite.press = () => {
-      quarterDrag = makeNote("quarter",true);
+      quarterDrag = makeNote("quarter");
       quarterDrag.makeDraggable();
       //t.makeDraggable(quarterDrag);
 
-
-      quarterDrag.dragSprite.release = () => {
+      quarterDragSprite = quarterDrag.dragSprite
+      quarterDragSprite.release = () => {
+        console.log("release of drag")
         // rect intersection - todo need to loop thru all measures
-        if (hitTestRectangle(quarterDrag, staff)) {
+        if (hitTestRectangle(quarterDragSprite, staff)) {
           console.log("hit staff");
-          quarterDrop = makeNote("quarter",true,80,150);
+          quarterDrop = makeNote("quarter",80,150);
           //note = new Note('')
         }
-        quarterDrag.visible = false; // always hide it
+        quarterDragSprite.visible = false; // always hide it
       };
 
     };
@@ -191,8 +192,8 @@
 
   }
 
-  function makeNote(noteType, x=80, y=80) {
-    return new Note(noteType,x,y);
+  function makeNote(noteType, x=80, y=40) {
+    return new Note(noteType,true,x,y);
     // let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
     // //note.anchor.set(0.5);
     // note.x = x;
@@ -281,7 +282,7 @@
     // Display prompt, draggable notes, drop zone
   }
   class Note {
-    constructor (name,drag=false,x=80,y=80) {
+    constructor (name,drag=false,x=80,y=40) {
       this.name = name;
       if (drag) {
         this.dragSprite = new Sprite(resources['images/' + name + '-note.png'].texture);
