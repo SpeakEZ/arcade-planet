@@ -242,7 +242,7 @@
           default:
             console.log('unknown note name', name);
         }
-        this.img = makeNoteBottom(this.duration);
+        this.img = makeNoteScrolling(this.duration);
       }
     }
 
@@ -311,6 +311,7 @@
     console.log('in outro');
     musicPlaybackArea.visible = false;
     cat.visible = false;
+    outroText.visible = true;
   }
 
 
@@ -319,7 +320,6 @@
     let note = new Sprite(resources['images/quarter-note.png'].texture);
     note.anchor.set(0.5);
     note.x = accumulatedDuration;
-    console.log('acc dur', accumulatedDuration);
     note.y = 50;
     note.vx = -1;
     note.vy = 0;
