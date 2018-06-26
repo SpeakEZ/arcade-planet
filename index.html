@@ -162,7 +162,7 @@
     musicPlaybackStartButton.visible = false;
     musicPlaybackStartButton.interactive = true;
     musicPlaybackStartButton.buttonMode = true;
-    musicPlaybackStartButton.on('click', () => state = playingMusic);
+    musicPlaybackStartButton.on('click', checkMeasures); //() => state = playingMusic);
 
     playingDrum = new Sprite(resources['images/hack_drum.png'].texture);
     playingDrum.position.set(500, 400);
@@ -201,6 +201,20 @@
 
   }
 
+  function checkMeasures() {
+    let sum = 0.0;
+    measure0.forEach((note) => sum += note.value )
+    if (sum == 1.0) {
+      state = playingMusic;
+    }
+    else if (sum > 1.0) {
+      alert("Your measures has too many notes (reload page)");
+    }
+    else {
+      alert("Your measures do not have enough notes")
+    }
+  }
+
   function setupNote(noteType, x=80, y=40) {
     note = makeNote(noteType,x,y);
     noteSprite = note.dragSprite;
@@ -217,7 +231,11 @@
           noteDrop = makeNote(noteType,xDrop,150);
           measure0.push(noteDrop);
         }
+        //
         noteDragSprite.visible = false; // hide the dragger
+        //t.noteDragSprite
+        // this cases exception with no children hmmm
+        //app.stage.removeChild(noteDragSprite);
       };
     };
 
