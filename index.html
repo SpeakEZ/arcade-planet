@@ -97,29 +97,7 @@
     app.stage.addChild(staff);
 
 
-    quarter = makeNote("quarter");
-    quarterSprite = quarter.dragSprite;
-    quarterSprite.press = () => {
-      quarterDrag = makeNote("quarter");
-      quarterDrag.makeDraggable();
-      //t.makeDraggable(quarterDrag);
-
-      quarterDragSprite = quarterDrag.dragSprite
-      quarterDragSprite.release = () => {
-        console.log("release of drag")
-        // rect intersection - todo need to loop thru all measures
-        if (hitTestRectangle(quarterDragSprite, staff)) {
-          console.log("hit staff");
-          x = 73 + measure0.length * 15;
-          quarterDrop = makeNote("quarter",x,150);
-          measure0.push(quarterDrop);
-        }
-        quarterDragSprite.visible = false; // always hide it
-      };
-
-    };
-
-
+    quarter = setupNote("quarter");
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -221,22 +199,30 @@
 
   }
 
+  function setupNote(noteType, x=80, y=40) {
+    note = makeNote(noteType);
+    noteSprite = note.dragSprite;
+    noteSprite.press = () => {
+      noteDrag = makeNote(noteType);
+      noteDrag.makeDraggable();
+      noteDragSprite = noteDrag.dragSprite
+      noteDragSprite.release = () => {
+        console.log("release of drag")
+        // rect intersection - todo need to loop thru all measures
+        if (hitTestRectangle(noteDragSprite, staff)) {
+          console.log("hit staff");
+          x = 73 + measure0.length * 15;
+          noteDrop = makeNote(noteType,x,150);
+          measure0.push(noteDrop);
+        }
+        noteDragSprite.visible = false; // hide the dragger
+      };
+    };
+
+  }
+
   function makeNote(noteType, x=80, y=40) {
-    return new Note(noteType,true,x,y);
-    // let note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
-    // //note.anchor.set(0.5);
-    // note.x = x;
-    // note.y = y;
-    // note.vx = 0;
-    // note.vy = 0;
-    // note.width = 15;
-    // note.height = 25;
-    //
-    // app.stage.addChild(note);
-    //
-    // //t.makeDraggable(note);
-    // t.makeInteractive(note);
-    // return note;
+    return new Note(noteType, true, x, y);
   }
 
   function hitTestRectangle(r1, r2) {
