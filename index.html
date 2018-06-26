@@ -68,6 +68,7 @@
   let drumSound = new Howl({src: 'platesnr.wav'});
 
   //let measure0 = [];
+  let measures = [];
   let measure0; // = new Measure();
   let measure1 = [];
 
@@ -85,7 +86,10 @@
     cat.vy = 0;
     app.stage.addChild(cat);
 
-    measure0 = new Measure();
+    measures = [];
+    measures.push(new Measure(10));
+    measures.push(new Measure(10+250));
+    //measure0 = new Measure();
 
 
     quarter = setupNote("quarter");
@@ -193,13 +197,14 @@
 
   class Measure {
 
-    constructor() {
+    constructor(x=10) {
+      this.x = x;
       this.notes = [];
       let texture = TextureCache["images/staff.png"];
       let rect = new Rectangle(80,50,320,100);
       texture.frame = rect;
       this.sprite = new Sprite(texture);
-      this.sprite.x = 10;
+      this.sprite.x = x;
       this.sprite.y = 100;
       this.sprite.vx = 0;
       this.sprite.vy = 0;
@@ -208,24 +213,35 @@
       app.stage.addChild(this.sprite);
     }
     addNote(noteType) {
-      let xDrop = 73 + this.notes.length * 15;
+      let xDrop = this.x + 68 + this.notes.length * 15;
       note = makeNote(noteType,xDrop,150);
       this.notes.push(note);
+    }
+    checkDrop(noteSprite,noteType) {
+      if (hitTestRectangle(noteSprite, this.sprite)) {
+        console.log("hit staff");
+        this.addNote(noteType);
+      }
+    }
+    checkMeasure() {
+      let sum = 0.0;
+      this.notes.forEach((note) => sum += note.value );
+      if (sum == 1.0) {
+        state = playingMusic;
+      }
+      else if (sum > 1.0) {
+        alert("Your measures have too many notes (reload page)");
+      }
+      else {
+        alert("Your measures do not have enough notes")
+      }
     }
   }
 
   function checkMeasures() {
-    let sum = 0.0;
-    measure0.forEach((note) => sum += note.value )
-    if (sum == 1.0) {
-      state = playingMusic;
-    }
-    else if (sum > 1.0) {
-      alert("Your measures has too many notes (reload page)");
-    }
-    else {
-      alert("Your measures do not have enough notes")
-    }
+    let ok = false;
+    measures.forEach( (ms) => (ok = ms.checkMeasure()) );
+
   }
 
   function setupNote(noteType, x=80, y=40) {
@@ -238,14 +254,12 @@
       noteDragSprite.release = () => {
         console.log("release of drag")
         // rect intersection - todo need to loop thru all measures
-        if (hitTestRectangle(noteDragSprite, measure0.sprite)) {
-          console.log("hit staff");
-          //xDrop = 73 + measure0.length * 15;
-          //noteDrop = makeNote(noteType,xDrop,150);
-          //measure0.push(noteDrop);
-          measure0.addNote(noteType);
-        }
-        //
+        measures.forEach((ms) => ms.checkDrop(noteDragSprite,noteType));
+        // if (hitTestRectangle(noteDragSprite, measure0.sprite)) {
+        //   console.log("hit staff");
+        //   measure0.addNote(noteType);
+        // }
+        // //
         noteDragSprite.visible = false; // hide the dragger
         //t.noteDragSprite
         // this cases exception with no children hmmm
@@ -455,16 +469,16 @@
 
     noteWindow -= 1;
 
-    if (song.length === 0) {
+    if (measures.length === 0) {
       state = outroTransition;
       return;
     }
     // User taps screen in time with selected notes, accuracy is counted
 
     // Draw notes on bottom, scrolling towards the left
-    for (let measure of song) {
+    for (let measure of measures) {
       // put notes
-      for (let note of measure) {
+      for (let note of measure.notes) {
         note.img.x += note.img.vx;
         if (note.img.x < 800) {
           note.img.visible = true;
@@ -472,21 +486,23 @@
       }
     }
 
-    if (song[0][0].img.x <= 50) {
+    if (measures[0].notes[0].img.x <= 50) {
       noteWindow = 20;
     }
 
-    if (song[0][0].img.x <= 0) {
-      song[0][0].img.visible = false;
-      console.log('playing note', song[0][0].name);
-      song[0].shift();
+    if (measures[0].notes[0].img.x <= 0) {
+      measures[0].notes[0].img.visible = false;
+      console.log('playing note', measures[0].notes[0].name);
+      //song[0].shift();
+      measures[0].notes.shift();
 
       // New note! Play a sound
       //drumSound.play();
 
       // Next measure
-      if (song[0].length === 0) {
-        song.shift();
+      if (measures[0].length === 0) {
+        //song.shift();
+        measures.shift();
       }
     }
 
