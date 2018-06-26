@@ -88,14 +88,13 @@
       t.makeDraggable(quarterDrag);
 
       quarterDrag.release = () => {
-        // rect intersection - todo need to loop thru all measure
+        // rect intersection - todo need to loop thru all measures
         if (hitTestRectangle(quarterDrag, staff)) {
           console.log("hit staff");
+          quarterDrop = makeNote("quarter",80,150);
+
         }
-        // no intersection - hide
-        else {
-          quarterDrag.visible = false; // or app.stage.removeChild
-        }
+        quarterDrag.visible = false; // always hide it
       };
 
     };
@@ -175,11 +174,11 @@
 
   }
 
-  function makeNote(noteType) {
+  function makeNote(noteType, x=80, y=80) {
     note = new Sprite(resources['images/'+noteType+'-note.png'].texture);
     note.anchor.set(0.5);
-    note.x = 80;
-    note.y = 80;
+    note.x = x;
+    note.y = y;
     note.vx = 0;
     note.vy = 0;
     note.width = 15;
