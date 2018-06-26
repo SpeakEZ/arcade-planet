@@ -68,8 +68,14 @@
       t.makeDraggable(quarterDrag);
 
       quarterDrag.release = () => {
-        //Do something when the pointer is released after pressing the sprite
-        console.log("dropped");
+        // rect intersection - todo need to loop thru all measure
+        if (false) { //hitTestRectangle(quarterDrag, )) {
+
+        }
+        // no intersection - hide
+        else {
+          quarterDrag.visible = false; // or app.stage.removeChild
+        }
       };
 
     };
