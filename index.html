@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Hello World</title>
+    <title>Beat It!</title>
 </head>
 
 <script src="pixi.js"></script>
@@ -56,8 +56,8 @@
     .add('images/hack_ava_02.png')
     .load(setup);
 
-  let state, cat, startButton, introText, introPage, introTextStyle, outroText, quarter;
-  let introAvatar, playingAvatarUp, playingAvatarDown;
+  let state, cat, startButton, introText, introPage, introTextStyle, outroText, quarter, eighth;
+  let introAvatar, playingAvatarUp, playingAvatarDown, checkMeasuresButton;
 
   let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
   let musicTimer;
@@ -133,6 +133,17 @@
     startButton.visible = false;
     startButton.on('click',  () => state = math);
 
+    checkMeasuresButton = new Graphics();
+    checkMeasuresButton.lineStyle(4, 0xFF3300, 1);
+    checkMeasuresButton.beginFill(0xFFFFFF);
+    checkMeasuresButton.drawRect(0, 0, 100, 100);
+    checkMeasuresButton.endFill();
+    app.stage.addChild(checkMeasuresButton);
+    checkMeasuresButton.visible = false;
+    checkMeasuresButton.interactive = true;
+    checkMeasuresButton.buttonMode = true;
+    checkMeasuresButton.on('click', () => checkMeasures());
+    checkMeasuresButton.position.set(500, 400);
 
 
     musicPlaybackFrame = new Graphics();
@@ -189,7 +200,6 @@
     app.stage.addChild(introPage);
 
     state = introTransition;
-    //state = setupMusic;
 
     app.ticker.add(delta => gameLoop(delta));
 
@@ -214,7 +224,7 @@
     }
     addNote(noteType) {
       let xDrop = this.x + 68 + this.notes.length * 15;
-      note = makeNote(noteType,xDrop,150);
+      let note = makeNote(noteType,xDrop,150);
       this.notes.push(note);
     }
     checkDrop(noteSprite,noteType) {
@@ -226,7 +236,7 @@
     checkMeasure() {
       let sum = 0.0;
       this.notes.forEach((note) => sum += note.value );
-      if (sum == 1.0) {
+      if (sum === 1.0) {
         state = playingMusic;
       }
       else if (sum > 1.0) {
@@ -245,14 +255,14 @@
   }
 
   function setupNote(noteType, x=80, y=40) {
-    note = makeNote(noteType,x,y);
-    noteSprite = note.dragSprite;
+    let note = makeNote(noteType,x,y);
+    let noteSprite = note.dragSprite;
     noteSprite.press = () => {
-      noteDrag = makeNote(noteType,x);
+      let noteDrag = makeNote(noteType,x);
       noteDrag.makeDraggable();
-      noteDragSprite = noteDrag.dragSprite
+      let noteDragSprite = noteDrag.dragSprite;
       noteDragSprite.release = () => {
-        console.log("release of drag")
+        console.log("release of drag");
         // rect intersection - todo need to loop thru all measures
         measures.forEach((ms) => ms.checkDrop(noteDragSprite,noteType));
         // if (hitTestRectangle(noteDragSprite, measure0.sprite)) {
@@ -337,7 +347,7 @@
     introPage.buttonMode = true;
     introPage.on('click', () => {
       introPage.visible = false;
-      state = setupMusic
+      state = mathTransition;
     });
     introText.visible = true;
     startButton.visible = true;
@@ -348,11 +358,16 @@
 
   }
 
-  function math (delta) {
+  function mathTransition () {
+    checkMeasuresButton.visible = true;
     introPage.visible = false;
     introText.visible = false;
     startButton.visible = false;
-    console.log('hi');
+    cat.visible = false;
+    state = math;
+  }
+
+  function math (delta) {
 
     // Calculate current math problem
 
@@ -415,6 +430,9 @@
     cat.visible = false;
     introAvatar.visible = true;
     playingDrum.visible = false;
+    for (let measure of measures) {
+      measure.visible = false;
+    }
     // Representation of song?
     // Array of measures
     // Each measure is an array of notes, the time values for which sum to 1.
