@@ -54,22 +54,29 @@
     .add('images/hack_ava_intro.png')
     .add('images/hack_ava_01.png')
     .add('images/hack_ava_02.png')
+    .add('images/whole-note.png')
+    .add('images/half-note.png')
+    .add('images/sixteenth-note.png')
     .load(setup);
 
   let state, cat, startButton, introText, introPage, introTextStyle, outroText, quarter, eighth;
+  let whole, half, sixteenth;
   let introAvatar, playingAvatarUp, playingAvatarDown, checkMeasuresButton;
-
+  let allNotes = [];
   let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
   let musicTimer;
   let playingDrum, goodBeats = 0, badBeats = 0;
-  let song;
+  let song = [];
+  let notePrompt;
+
+  let neededNumNotes = 8;
 
   let noteWindow = 0;
   let drumSound = new Howl({src: 'platesnr.wav'});
 
   //let measure0 = [];
   let measures = [];
-  let measure0; // = new Measure();
+  let measure0 = []; // = new Measure();
   let measure1 = [];
 
   function setup () {
@@ -91,9 +98,11 @@
     measures.push(new Measure(10+250));
     //measure0 = new Measure();
 
-
-    quarter = setupNote("quarter");
-    eighth = setupNote("eighth",60);
+    whole = setupNote('whole', 40);
+    half = setupNote('half', 60);
+    quarter = setupNote("quarter", 80);
+    eighth = setupNote("eighth", 100);
+    sixteenth = setupNote('sixteenth', 120);
 
     introTextStyle = new TextStyle({
       fontFamily: 'Arial',
@@ -118,6 +127,12 @@
     outroText.y = 30;
     app.stage.addChild(outroText);
     outroText.visible = false;
+
+    notePrompt = new Text(`Fill the measures with ${neededNumNotes} notes.`, introTextStyle);
+    notePrompt.x = 200;
+    notePrompt.y = 30;
+    app.stage.addChild(notePrompt);
+    notePrompt.visible = false;
 
     startButton = new Graphics();
     startButton.lineStyle(4, 0xFF3300, 1);
@@ -167,7 +182,7 @@
     musicPlaybackStartButton.visible = false;
     musicPlaybackStartButton.interactive = true;
     musicPlaybackStartButton.buttonMode = true;
-    musicPlaybackStartButton.on('click', checkMeasures); //() => state = playingMusic);
+    musicPlaybackStartButton.on('click', () => state = playingMusic); //() => state = playingMusic);
 
     playingDrum = new Sprite(resources['images/hack_drum.png'].texture);
     playingDrum.position.set(500, 400);
@@ -237,21 +252,26 @@
       let sum = 0.0;
       this.notes.forEach((note) => sum += note.value );
       if (sum === 1.0) {
-        state = playingMusic;
-      }
-      else if (sum > 1.0) {
-        alert("Your measures have too many notes (reload page)");
+        return true;
       }
       else {
-        alert("Your measures do not have enough notes")
+        alert("The values of all notes in a measure must sum to 1!");
+        return false;
       }
     }
   }
 
   function checkMeasures() {
     let ok = false;
-    measures.forEach( (ms) => (ok = ms.checkMeasure()) );
+    let numNotes = 0;
+    measures.forEach((measure) => measure.notes.forEach((note) => numNotes += 1));
 
+    measures.forEach( (ms) => (ok = ms.checkMeasure()) );
+    if (ok && numNotes === neededNumNotes) {
+      state = setupMusic;
+    } else if (numNotes !== neededNumNotes) {
+      alert("You need to add more notes!")
+    }
   }
 
   function setupNote(noteType, x=80, y=40) {
@@ -271,6 +291,7 @@
         // }
         // //
         noteDragSprite.visible = false; // hide the dragger
+        noteDragSprite.position.set(-100, -100);
         //t.noteDragSprite
         // this cases exception with no children hmmm
         //app.stage.removeChild(noteDragSprite);
@@ -364,6 +385,7 @@
     introText.visible = false;
     startButton.visible = false;
     cat.visible = false;
+    notePrompt.visible = true;
     state = math;
   }
 
@@ -387,6 +409,7 @@
         t.makeInteractive(this.dragSprite);
 
         app.stage.addChild(this.dragSprite);
+        allNotes.push(this.dragSprite);
         t.makeInteractive(this.dragSprite);
       }
       switch (name) {
@@ -417,7 +440,7 @@
         default:
           console.log('unknown note name', name);
       }
-      this.img = makeNoteScrolling(this.duration);
+      this.img = makeNoteScrolling(this.duration, this.name);
     }
 
     makeDraggable() {
@@ -430,8 +453,14 @@
     cat.visible = false;
     introAvatar.visible = true;
     playingDrum.visible = false;
+    notePrompt.visible = false;
+    checkMeasuresButton.visible = false;
+    for (let note of allNotes) {
+      note.visible = false;
+    }
     for (let measure of measures) {
-      measure.visible = false;
+      measure.sprite.visible = false;
+      song.push(measure.notes);
     }
     // Representation of song?
     // Array of measures
@@ -439,9 +468,10 @@
 
     //let measure0 = [new Note('rest')]; - defined by dragging now!
     //let measure1 = [new Note('half'), new Note('quarter'), new Note('quarter')];
-    let measure2 = [new Note('eighth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
-    let measure3 = [new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
-    song = [measure0, measure1, measure2, measure3];
+    //let measure2 = [new Note('eighth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
+    //let measure3 = [new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('sixteenth'), new Note('half'), new Note('quarter')];
+    //song = [measure0, measure1];//, measure2, measure3];
+    console.log(song);
 
     // Place animated music player person
     playingAvatarUp.interactive = true;
@@ -474,7 +504,6 @@
   }
 
   function music (delta) {
-
     // When start button is pressed, begin music play
     //playingDrum.visible = true;
 
@@ -548,8 +577,9 @@
 
   let accumulatedDuration = 800;
 
-  function makeNoteScrolling(duration) {
-    let note = new Sprite(resources['images/quarter-note.png'].texture);
+  function makeNoteScrolling(duration, name) {
+    let note = new Sprite(resources['images/' + name + '-note.png'].texture);
+    //let note = new Sprite(resources['images/quarter-note.png'].texture);
     note.anchor.set(0.5);
     note.x = accumulatedDuration;
     note.y = 50;
