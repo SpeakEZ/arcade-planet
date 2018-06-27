@@ -41,7 +41,7 @@
   });
 
   document.body.appendChild(app.view);
-  app.renderer.backgroundColor = 0x99999999;
+  app.renderer.backgroundColor = 0x04abff;//0x99999999;
   let t = new Tink(PIXI, app.renderer.view);
 
   loader
@@ -61,15 +61,16 @@
 
   let state, cat, startButton, introText, introPage, introTextStyle, outroText, quarter, eighth;
   let whole, half, sixteenth;
-  let introAvatar, playingAvatarUp, playingAvatarDown, checkMeasuresButton;
+  let introAvatar, playingAvatarUp, playingAvatarDown, checkMeasuresButton, checkMeasuresText;
   let allNotes = [];
-  let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton;
+  let musicPlaybackArea, musicPlaybackFrame, musicPlaybackStartButton, musicPlaybackStartButtonText;
   let musicTimer;
   let playingDrum, goodBeats = 0, badBeats = 0;
   let song = [];
   let notePrompt;
 
-  let neededNumNotes = 8;
+  //
+  let neededNumNotes = 22;
 
   let noteWindow = 0;
   let drumSound = new Howl({src: 'platesnr.wav'});
@@ -94,8 +95,9 @@
     app.stage.addChild(cat);
 
     measures = [];
-    measures.push(new Measure(10));
-    measures.push(new Measure(10+250));
+    measures.push(new Measure(150));
+    measures.push(new Measure(150+250));
+    measures.push(new Measure(150+500));
     //measure0 = new Measure();
 
     whole = setupNote('whole', 40);
@@ -128,9 +130,9 @@
     app.stage.addChild(outroText);
     outroText.visible = false;
 
-    notePrompt = new Text(`Fill the measures with ${neededNumNotes} notes.`, introTextStyle);
-    notePrompt.x = 200;
-    notePrompt.y = 30;
+    notePrompt = new Text(`Try to fill the measures with a total of ${neededNumNotes} notes!`, introTextStyle);
+    notePrompt.x = 170;
+    notePrompt.y = 130;
     app.stage.addChild(notePrompt);
     notePrompt.visible = false;
 
@@ -151,14 +153,25 @@
     checkMeasuresButton = new Graphics();
     checkMeasuresButton.lineStyle(4, 0xFF3300, 1);
     checkMeasuresButton.beginFill(0xFFFFFF);
-    checkMeasuresButton.drawRect(0, 0, 100, 100);
+    checkMeasuresButton.drawRect(0, 0, 200, 50);
     checkMeasuresButton.endFill();
     app.stage.addChild(checkMeasuresButton);
     checkMeasuresButton.visible = false;
     checkMeasuresButton.interactive = true;
     checkMeasuresButton.buttonMode = true;
     checkMeasuresButton.on('click', () => checkMeasures());
-    checkMeasuresButton.position.set(500, 400);
+    checkMeasuresButton.position.set(420, 450);
+
+    checkMeasuresText = new Text("OK! Play it!", introTextStyle);
+    checkMeasuresText.position.set(420, 450);
+    checkMeasuresText.visible = false;
+    app.stage.addChild(checkMeasuresText);
+
+    outroText = new Text("Great job! Way to Beat It!", introTextStyle);
+    outroText.x = 300;
+    outroText.y = 30;
+    app.stage.addChild(outroText);
+    outroText.visible = false;
 
 
     musicPlaybackFrame = new Graphics();
@@ -174,7 +187,7 @@
     musicPlaybackStartButton = new Graphics();
     musicPlaybackStartButton.lineStyle(4, 0xFF3300, 1);
     musicPlaybackStartButton.beginFill(0x66CCFF);
-    musicPlaybackStartButton.drawRect(0, 0, 64, 64);
+    musicPlaybackStartButton.drawRect(0, 0, 118, 54);
     musicPlaybackStartButton.endFill();
     app.stage.addChild(musicPlaybackStartButton);
     musicPlaybackStartButton.x = 800;
@@ -183,6 +196,13 @@
     musicPlaybackStartButton.interactive = true;
     musicPlaybackStartButton.buttonMode = true;
     musicPlaybackStartButton.on('click', () => state = playingMusic); //() => state = playingMusic);
+
+    musicPlaybackStartButtonText = new Text('Begin!', introTextStyle);
+    musicPlaybackStartButtonText.x = 800;
+    musicPlaybackStartButtonText.y = 400;
+    app.stage.addChild(musicPlaybackStartButtonText);
+    musicPlaybackStartButtonText.visible = false;
+
 
     playingDrum = new Sprite(resources['images/hack_drum.png'].texture);
     playingDrum.position.set(500, 400);
@@ -193,20 +213,20 @@
 
     playingAvatarUp = new Sprite(resources['images/hack_ava_01.png'].texture);
     playingAvatarDown = new Sprite(resources['images/hack_ava_02.png'].texture);
-    playingAvatarUp.position.set(500, 300);
-    playingAvatarDown.position.set(500, 300);
+    playingAvatarUp.position.set(385, 230);
+    playingAvatarDown.position.set(385, 230);
     playingAvatarUp.height = playingAvatarDown.height = 300;
-    playingAvatarUp.width = playingAvatarDown.width = 300;
+    playingAvatarUp.width = playingAvatarDown.width = 330;
     app.stage.addChild(playingAvatarUp);
     app.stage.addChild(playingAvatarDown);
     playingAvatarUp.visible = playingAvatarDown.visible = false;
 
     introAvatar = new Sprite(resources['images/hack_ava_intro.png'].texture);
-    introAvatar.position.set(500, 300);
+    introAvatar.position.set(450, 530);
     introAvatar.height = 200;
     introAvatar.width = 130;
     app.stage.addChild(introAvatar);
-    introAvatar.visible = false;
+    introAvatar.visible = true;
 
     introPage = new Sprite(resources['images/introscreen.png'].texture);
     introPage.position.set(0, 0);
@@ -230,7 +250,7 @@
       texture.frame = rect;
       this.sprite = new Sprite(texture);
       this.sprite.x = x;
-      this.sprite.y = 100;
+      this.sprite.y = 300;
       this.sprite.vx = 0;
       this.sprite.vy = 0;
       this.sprite.width = 240;
@@ -239,7 +259,7 @@
     }
     addNote(noteType) {
       let xDrop = this.x + 68 + this.notes.length * 15;
-      let note = makeNote(noteType,xDrop,150);
+      let note = makeNote(noteType,xDrop,350);
       this.notes.push(note);
     }
     checkDrop(noteSprite,noteType) {
@@ -255,7 +275,7 @@
         return true;
       }
       else {
-        alert("The values of all notes in a measure must sum to 1!");
+        alert(`The values of all notes in a measure must sum to 1! Current: ${sum}`);
         return false;
       }
     }
@@ -274,11 +294,12 @@
     }
   }
 
-  function setupNote(noteType, x=80, y=40) {
+  function setupNote(noteType, x=80, y=240) {
+    x += 250;
     let note = makeNote(noteType,x,y);
     let noteSprite = note.dragSprite;
     noteSprite.press = () => {
-      let noteDrag = makeNote(noteType,x);
+      let noteDrag = makeNote(noteType,x, y);
       noteDrag.makeDraggable();
       let noteDragSprite = noteDrag.dragSprite;
       noteDragSprite.release = () => {
@@ -381,6 +402,7 @@
 
   function mathTransition () {
     checkMeasuresButton.visible = true;
+    checkMeasuresText.visible = true;
     introPage.visible = false;
     introText.visible = false;
     startButton.visible = false;
@@ -441,6 +463,7 @@
           console.log('unknown note name', name);
       }
       this.img = makeNoteScrolling(this.duration, this.name);
+      this.played = false;
     }
 
     makeDraggable() {
@@ -452,9 +475,11 @@
     introText.visible = false;
     cat.visible = false;
     introAvatar.visible = true;
+    introAvatar.position.set(450, 250);
     playingDrum.visible = false;
     notePrompt.visible = false;
     checkMeasuresButton.visible = false;
+    checkMeasuresText.visible = false;
     for (let note of allNotes) {
       note.visible = false;
     }
@@ -482,6 +507,7 @@
       playingAvatarDown.visible = true;
       if (noteWindow > 0) {
         goodBeats += 1;
+        measures[0].notes[0].played = true;
       } else {
         badBeats += 1;
       }
@@ -498,6 +524,7 @@
 
     // Place start button
     musicPlaybackStartButton.visible = true;
+    musicPlaybackStartButtonText.visible = true;
     musicTimer = 0;
 
     state = music;
@@ -511,6 +538,7 @@
 
   function playingMusic (delta) {
     musicPlaybackStartButton.visible = false;
+    musicPlaybackStartButtonText.visible = false;
     introAvatar.visible = false;
     playingAvatarUp.visible = true;
 
@@ -533,7 +561,7 @@
       }
     }
 
-    if (measures[0].notes[0].img.x <= 50) {
+    if (measures[0].notes[0].img.x <= 50 && !measures[0].notes[0].played) {
       noteWindow = 20;
     }
 
